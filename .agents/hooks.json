@@ -1,0 +1,10 @@
+{
+  "agent-capture": {
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python3 capture_log.py"
+      }
+    ]
+  }
+}
