@@ -6,6 +6,7 @@ import ProductGallery from '@/components/products/ProductGallery';
 import ProductInfo from '@/components/products/ProductInfo';
 import PurchaseSection from '@/components/products/PurchaseSection';
 import RelatedProducts from '@/components/products/RelatedProducts';
+import { ReviewSection } from '@/components/reviews/ReviewSection';
 import { HelpCircle, ArrowLeft } from 'lucide-react';
 
 interface ProductPageProps {
@@ -92,6 +93,9 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
         {/* Related Products Recommendations */}
         <RelatedProducts currentProductId={product.id} allProducts={mockProducts} />
+
+        {/* Customer Reviews & Ratings System */}
+        <ReviewSection productId={product.id} productTitle={product.title} />
 
       </div>
     </div>
