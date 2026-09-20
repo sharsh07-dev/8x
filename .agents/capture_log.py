@@ -118,7 +118,7 @@ def main():
                 f.write("\n\n\n")
                 
     # Output something to stdout as required by hook contract
-    print(json.dumps({"decision": "continue", "reason": "Logged session."}))
+    print(json.dumps({"decision": "approve", "reason": "Logged session."}))
 
 if __name__ == '__main__':
     main()
