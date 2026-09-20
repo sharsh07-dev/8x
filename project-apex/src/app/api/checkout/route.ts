@@ -1,24 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { headers } from 'next/headers';
+import { getServerSession } from '@/lib/server-session';
 import { calculateOrderPricing, DELIVERY_OPTIONS } from '@/lib/checkout/pricing';
 import { checkInventoryAvailability } from '@/lib/checkout/inventory';
 
 export async function GET(req: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Authentication required for checkout' }, { status: 401 });
   }
 
-  // Load customer's saved addresses
-  const addresses = await prisma.address.findMany({
-    where: { userId: session.user.id },
-    orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
-  });
+  // Load customer's saved addresses — gracefully handle DB being down
+  let addresses: unknown[] = [];
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    addresses = await prisma.address.findMany({
+      where: { userId: session.user.id },
+      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
+    });
+  } catch (dbErr: any) {
+    console.warn('[checkout GET] DB unavailable, returning empty addresses:', dbErr?.message);
+  }
 
   return NextResponse.json({
     user: {
@@ -29,6 +31,13 @@ export async function GET(req: NextRequest) {
     addresses,
     deliveryOptions: Object.values(DELIVERY_OPTIONS),
     paymentMethods: [
+      {
+        id: 'RAZORPAY_UPI',
+        name: 'UPI / QR Code',
+        isMock: false,
+        mockLabel: 'Google Pay, PhonePe, Paytm',
+        description: 'Pay instantly via UPI or scan the QR code with any UPI app.',
+      },
       {
         id: 'SIMULATED_CARD',
         name: 'Credit or Debit Card',
@@ -58,9 +67,7 @@ export async function GET(req: NextRequest) {
  * Recalculates order pricing and stock verification authoritative on server
  */
 export async function POST(req: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 });

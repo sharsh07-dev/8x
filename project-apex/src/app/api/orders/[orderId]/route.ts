@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { getServerSession } from '@/lib/server-session';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
 
@@ -7,9 +7,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ orderId: string }> }
 ) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
@@ -48,9 +46,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ orderId: string }> }
 ) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 });

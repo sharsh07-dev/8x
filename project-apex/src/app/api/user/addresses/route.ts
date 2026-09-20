@@ -1,29 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { headers } from 'next/headers';
+import { getServerSession } from '@/lib/server-session';
 
 export async function GET(req: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const addresses = await prisma.address.findMany({
-    where: { userId: session.user.id },
-    orderBy: { isDefault: 'desc' },
-  });
-
-  return NextResponse.json({ addresses });
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    const addresses = await prisma.address.findMany({
+      where: { userId: session.user.id },
+      orderBy: { isDefault: 'desc' },
+    });
+    return NextResponse.json({ addresses });
+  } catch (dbErr: any) {
+    console.warn('[addresses GET] DB unavailable:', dbErr?.message);
+    return NextResponse.json({ addresses: [] });
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -36,6 +35,8 @@ export async function POST(req: NextRequest) {
     if (!fullName || !street || !city || !state || !zipCode) {
       return NextResponse.json({ error: 'Missing required address fields' }, { status: 400 });
     }
+
+    const { prisma } = await import('@/lib/prisma');
 
     // If this address is set as default, unset other defaults
     if (isDefault) {
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
         city,
         state,
         zipCode,
-        country: country || 'United States',
+        country: country || 'India',
         phone,
         isDefault: Boolean(isDefault),
         instructions,
@@ -61,15 +62,14 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ address }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
+    console.error('[addresses POST] error:', error?.message);
     return NextResponse.json({ error: 'Failed to create address' }, { status: 500 });
   }
 }
 
 export async function DELETE(req: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -82,18 +82,21 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: 'Address ID required' }, { status: 400 });
   }
 
-  // Ensure users cannot delete another user's address (OWASP authorization check)
-  const existing = await prisma.address.findFirst({
-    where: { id: addressId, userId: session.user.id },
-  });
+  try {
+    const { prisma } = await import('@/lib/prisma');
 
-  if (!existing) {
-    return NextResponse.json({ error: 'Address not found or unauthorized' }, { status: 404 });
+    const existing = await prisma.address.findFirst({
+      where: { id: addressId, userId: session.user.id },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: 'Address not found or unauthorized' }, { status: 404 });
+    }
+
+    await prisma.address.delete({ where: { id: addressId } });
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error('[addresses DELETE] error:', error?.message);
+    return NextResponse.json({ error: 'Failed to delete address' }, { status: 500 });
   }
-
-  await prisma.address.delete({
-    where: { id: addressId },
-  });
-
-  return NextResponse.json({ success: true });
 }

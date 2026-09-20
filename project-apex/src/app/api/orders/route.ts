@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { getServerSession } from '@/lib/server-session';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
 import { calculateOrderPricing, DELIVERY_OPTIONS } from '@/lib/checkout/pricing';
@@ -8,9 +8,7 @@ import { sendOrderConfirmationEmail } from '@/lib/email';
 import { MockPaymentAdapter, PaymentMethodType } from '@/lib/payments/payment-adapter';
 
 export async function GET(req: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
@@ -31,9 +29,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getServerSession();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Authentication required to place an order' }, { status: 401 });

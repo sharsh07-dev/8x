@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/lib/auth';
+import { getServerSession } from '@/lib/server-session';
 import { headers } from 'next/headers';
 import { mockProducts } from '@/data/mockProducts';
 
@@ -10,9 +10,7 @@ import { mockProducts } from '@/data/mockProducts';
  */
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const session = await getServerSession();
 
     if (!session?.user) {
       return NextResponse.json(

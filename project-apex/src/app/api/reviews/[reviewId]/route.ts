@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/lib/auth';
+import { getServerSession } from '@/lib/server-session';
 import { headers } from 'next/headers';
 
 interface RouteContext {
@@ -16,9 +16,7 @@ interface RouteContext {
 export async function PATCH(request: NextRequest, { params }: RouteContext) {
   try {
     const { reviewId } = await params;
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const session = await getServerSession();
 
     if (!session?.user) {
       return NextResponse.json(
@@ -106,9 +104,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
 export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
     const { reviewId } = await params;
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const session = await getServerSession();
 
     if (!session?.user) {
       return NextResponse.json(
