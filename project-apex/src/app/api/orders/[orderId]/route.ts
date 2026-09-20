@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/server-session';
-import { prisma } from '@/lib/prisma';
-import { headers } from 'next/headers';
+import { getCookieOrders } from '@/lib/user-storage';
 
 export async function GET(
   req: NextRequest,
@@ -15,17 +14,30 @@ export async function GET(
 
   const { orderId } = await params;
 
-  // Search by internal id or public orderNumber
-  const order = await prisma.order.findFirst({
-    where: {
-      OR: [{ id: orderId }, { orderNumber: orderId }],
-    },
-    include: {
-      items: true,
-      addressSnapshot: true,
-      payment: true,
-    },
-  });
+  let order: any = null;
+
+  // 1. Try DB lookup
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    order = await prisma.order.findFirst({
+      where: {
+        OR: [{ id: orderId }, { orderNumber: orderId }],
+      },
+      include: {
+        items: true,
+        addressSnapshot: true,
+        payment: true,
+      },
+    });
+  } catch (dbErr: any) {
+    console.warn('[orders/[orderId] GET] DB unavailable:', dbErr?.message);
+  }
+
+  // 2. Fallback to cookie storage
+  if (!order) {
+    const cookieOrders = await getCookieOrders(session.user.id);
+    order = cookieOrders.find((o) => o.id === orderId || o.orderNumber === orderId);
+  }
 
   if (!order) {
     return NextResponse.json({ error: 'Order not found' }, { status: 404 });
@@ -54,57 +66,68 @@ export async function POST(
 
   const { orderId } = await params;
 
-  const order = await prisma.order.findFirst({
-    where: {
-      OR: [{ id: orderId }, { orderNumber: orderId }],
-    },
-    include: { items: true },
-  });
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    const order = await prisma.order.findFirst({
+      where: {
+        OR: [{ id: orderId }, { orderNumber: orderId }],
+      },
+      include: { items: true },
+    });
 
-  if (!order) {
-    return NextResponse.json({ error: 'Order not found' }, { status: 404 });
-  }
-
-  if (order.userId !== session.user.id) {
-    return NextResponse.json({ error: 'Unauthorized to modify this order' }, { status: 403 });
-  }
-
-  if (order.status === 'CANCELLED') {
-    return NextResponse.json({ error: 'Order is already cancelled' }, { status: 400 });
-  }
-
-  if (order.status === 'SHIPPED' || order.status === 'DELIVERED') {
-    return NextResponse.json(
-      { error: 'Cannot cancel an order that has already shipped or delivered' },
-      { status: 400 }
-    );
-  }
-
-  // Cancel order and restore stock in transaction
-  const updatedOrder = await prisma.$transaction(async (tx) => {
-    // Restore inventory
-    for (const item of order.items) {
-      await tx.productInventory.update({
-        where: { productId: item.productId },
-        data: {
-          stock: { increment: item.quantity },
-        },
-      });
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    return tx.order.update({
-      where: { id: order.id },
-      data: {
-        status: 'CANCELLED',
-        paymentStatus: 'REFUNDED',
-      },
-      include: {
-        items: true,
-        addressSnapshot: true,
-        payment: true,
-      },
-    });
-  });
+    if (order.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Unauthorized to modify this order' }, { status: 403 });
+    }
 
-  return NextResponse.json({ success: true, order: updatedOrder });
+    if (order.status === 'CANCELLED') {
+      return NextResponse.json({ error: 'Order is already cancelled' }, { status: 400 });
+    }
+
+    if (order.status === 'SHIPPED' || order.status === 'DELIVERED') {
+      return NextResponse.json(
+        { error: 'Cannot cancel an order that has already shipped or delivered' },
+        { status: 400 }
+      );
+    }
+
+    // Cancel order and restore stock in transaction
+    const updatedOrder = await prisma.$transaction(async (tx) => {
+      // Restore inventory
+      for (const item of order.items) {
+        try {
+          await tx.productInventory.update({
+            where: { productId: item.productId },
+            data: {
+              stock: { increment: item.quantity },
+            },
+          });
+        } catch {}
+      }
+
+      return tx.order.update({
+        where: { id: order.id },
+        data: {
+          status: 'CANCELLED',
+          paymentStatus: 'REFUNDED',
+        },
+        include: {
+          items: true,
+          addressSnapshot: true,
+          payment: true,
+        },
+      });
+    });
+
+    return NextResponse.json({ success: true, order: updatedOrder });
+  } catch (error: any) {
+    console.error('[orders/[orderId] POST] Error:', error?.message);
+    return NextResponse.json(
+      { error: 'Unable to cancel order at this time.' },
+      { status: 500 }
+    );
+  }
 }

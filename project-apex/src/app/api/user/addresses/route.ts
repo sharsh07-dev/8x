@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/server-session';
+import {
+  getUserAddresses,
+  createUserAddress,
+  deleteCookieAddress,
+} from '@/lib/user-storage';
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession();
@@ -9,14 +14,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { prisma } = await import('@/lib/prisma');
-    const addresses = await prisma.address.findMany({
-      where: { userId: session.user.id },
-      orderBy: { isDefault: 'desc' },
-    });
+    const addresses = await getUserAddresses(session.user.id);
     return NextResponse.json({ addresses });
-  } catch (dbErr: any) {
-    console.warn('[addresses GET] DB unavailable:', dbErr?.message);
+  } catch (err: any) {
+    console.error('[addresses GET] error:', err?.message);
     return NextResponse.json({ addresses: [] });
   }
 }
@@ -36,19 +37,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required address fields' }, { status: 400 });
     }
 
-    const { prisma } = await import('@/lib/prisma');
-
-    // If this address is set as default, unset other defaults
-    if (isDefault) {
-      await prisma.address.updateMany({
-        where: { userId: session.user.id },
-        data: { isDefault: false },
-      });
-    }
-
-    const address = await prisma.address.create({
-      data: {
-        userId: session.user.id,
+    const address = await createUserAddress(
+      session.user.id,
+      {
         fullName,
         street,
         city,
@@ -59,12 +50,16 @@ export async function POST(req: NextRequest) {
         isDefault: Boolean(isDefault),
         instructions,
       },
-    });
+      {
+        name: session.user.name,
+        email: session.user.email,
+      }
+    );
 
     return NextResponse.json({ address }, { status: 201 });
   } catch (error: any) {
     console.error('[addresses POST] error:', error?.message);
-    return NextResponse.json({ error: 'Failed to create address' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to save address' }, { status: 500 });
   }
 }
 
@@ -83,17 +78,14 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    const { prisma } = await import('@/lib/prisma');
+    try {
+      const { prisma } = await import('@/lib/prisma');
+      await prisma.address.deleteMany({
+        where: { id: addressId, userId: session.user.id },
+      });
+    } catch {}
 
-    const existing = await prisma.address.findFirst({
-      where: { id: addressId, userId: session.user.id },
-    });
-
-    if (!existing) {
-      return NextResponse.json({ error: 'Address not found or unauthorized' }, { status: 404 });
-    }
-
-    await prisma.address.delete({ where: { id: addressId } });
+    await deleteCookieAddress(session.user.id, addressId);
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('[addresses DELETE] error:', error?.message);

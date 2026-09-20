@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/server-session';
+import { getUserAddresses } from '@/lib/user-storage';
 import { calculateOrderPricing, DELIVERY_OPTIONS } from '@/lib/checkout/pricing';
 import { checkInventoryAvailability } from '@/lib/checkout/inventory';
 
@@ -10,17 +11,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Authentication required for checkout' }, { status: 401 });
   }
 
-  // Load customer's saved addresses — gracefully handle DB being down
-  let addresses: unknown[] = [];
-  try {
-    const { prisma } = await import('@/lib/prisma');
-    addresses = await prisma.address.findMany({
-      where: { userId: session.user.id },
-      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
-    });
-  } catch (dbErr: any) {
-    console.warn('[checkout GET] DB unavailable, returning empty addresses:', dbErr?.message);
-  }
+  // Load customer's saved addresses — seamlessly loads from DB or cookie storage
+  const addresses = await getUserAddresses(session.user.id);
 
   return NextResponse.json({
     user: {
