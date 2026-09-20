@@ -11,7 +11,6 @@ export const {
   useSession,
   verifyEmail,
   sendVerificationEmail,
-  forgetPassword,
   resetPassword,
   changePassword,
   revokeOtherSessions,

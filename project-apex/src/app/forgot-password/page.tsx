@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { forgetPassword } from '@/lib/auth-client';
 import { AlertCircle, CheckCircle2, KeyRound, ArrowRight } from 'lucide-react';
 
 export default function ForgotPasswordPage() {

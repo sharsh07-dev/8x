@@ -1,8 +1,8 @@
-import nodemailer from 'nodemailer';
+import nodemailer, { type Transporter } from 'nodemailer';
 
-let transporterPromise: Promise<nodemailer.Transporter> | null = null;
+let transporterPromise: Promise<Transporter> | null = null;
 
-async function getTransporter(): Promise<nodemailer.Transporter> {
+async function getTransporter(): Promise<Transporter> {
   if (transporterPromise) return transporterPromise;
 
   transporterPromise = (async () => {

@@ -66,16 +66,16 @@ def main():
     if not exchanges:
         sys.exit(0)
         
-    date_str = datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d')
+    date_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
     if first_prompt_time:
         try:
             dt = datetime.strptime(first_prompt_time, "%Y-%m-%dT%H:%M:%SZ")
             date_str = dt.strftime('%Y-%m-%d')
             time_str = dt.strftime('%H-%M-%S')
         except:
-            time_str = datetime.now(datetime.timezone.utc).strftime('%H-%M-%S')
+            time_str = datetime.now(timezone.utc).strftime('%H-%M-%S')
     else:
-        time_str = datetime.now(datetime.timezone.utc).strftime('%H-%M-%S')
+        time_str = datetime.now(timezone.utc).strftime('%H-%M-%S')
         
     filename = f"{date_str}_{time_str}_{session_id}.md"
     file_path = os.path.join(logs_dir, filename)

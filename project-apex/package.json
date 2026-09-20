@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:orders": "tsx scripts/test-step07-orders.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",
@@ -29,6 +30,7 @@
     "eslint-config-next": "16.3.5",
     "prisma": "^6.4.1",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

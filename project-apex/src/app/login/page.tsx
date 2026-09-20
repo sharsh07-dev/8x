@@ -35,7 +35,7 @@ function LoginFormContent() {
       const res = await signIn.email({
         email: email.trim().toLowerCase(),
         password,
-        dontRememberMe: !rememberMe,
+        rememberMe,
         callbackURL: callbackUrl,
       });
 
