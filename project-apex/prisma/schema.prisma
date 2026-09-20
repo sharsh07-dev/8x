@@ -20,6 +20,7 @@ model User {
   accounts       Account[]
   addresses      Address[]
   securityEvents SecurityEvent[]
+  orders         Order[]
 
   @@map("user")
 }
@@ -98,3 +99,102 @@ model SecurityEvent {
 
   @@map("security_event")
 }
+
+model Order {
+  id                String         @id @default(cuid())
+  orderNumber       String         @unique
+  userId            String
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status            String         @default("CONFIRMED") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  paymentStatus     String         @default("PAID")      // PENDING, PAID, FAILED, REFUNDED
+  currency          String         @default("USD")
+  subtotal          Float
+  shipping          Float          @default(0)
+  tax               Float          @default(0)
+  discount          Float          @default(0)
+  total             Float
+  deliveryMethod    String         @default("FREE_STANDARD")
+  estimatedDelivery String
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  items             OrderItem[]
+  addressSnapshot   OrderAddress?
+  payment           Payment?
+
+  @@index([userId])
+  @@index([orderNumber])
+  @@map("order")
+}
+
+model OrderItem {
+  id           String   @id @default(cuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String
+  productTitle String
+  productImage String
+  unitPrice    Float
+  quantity     Int
+  lineTotal    Float
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_item")
+}
+
+model OrderAddress {
+  id           String   @id @default(cuid())
+  orderId      String   @unique
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fullName     String
+  street       String
+  city         String
+  state        String
+  zipCode      String
+  country      String   @default("United States")
+  phone        String?
+  instructions String?
+
+  @@map("order_address")
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  orderId           String   @unique
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider          String   // "SIMULATED_CARD", "CASH_ON_DELIVERY", "APEX_POINTS"
+  providerReference String
+  amount            Float
+  currency          String   @default("USD")
+  status            String   @default("PAID") // PENDING, PAID, FAILED, REFUNDED
+  cardLast4         String?
+  cardBrand         String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("payment")
+}
+
+model ProductInventory {
+  productId   String   @id
+  stock       Int      @default(100)
+  reserved    Int      @default(0)
+  updatedAt   DateTime @updatedAt
+
+  @@map("product_inventory")
+}
+
+model IdempotencyRecord {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  userId    String
+  orderId   String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([key])
+  @@index([userId])
+  @@map("idempotency_record")
+}
+
