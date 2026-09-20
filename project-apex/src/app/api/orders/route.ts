@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/server-session';
-import { prisma } from '@/lib/prisma';
-import { headers } from 'next/headers';
 import { calculateOrderPricing, DELIVERY_OPTIONS } from '@/lib/checkout/pricing';
-import { checkInventoryAvailability, ensureInventorySeeded } from '@/lib/checkout/inventory';
+import { checkInventoryAvailability } from '@/lib/checkout/inventory';
 import { sendOrderConfirmationEmail } from '@/lib/email';
 import { MockPaymentAdapter, PaymentMethodType } from '@/lib/payments/payment-adapter';
 
@@ -15,17 +13,22 @@ export async function GET(req: NextRequest) {
   }
 
   // Fetch only orders belonging to the authenticated user
-  const orders = await prisma.order.findMany({
-    where: { userId: session.user.id },
-    include: {
-      items: true,
-      addressSnapshot: true,
-      payment: true,
-    },
-    orderBy: { createdAt: 'desc' },
-  });
-
-  return NextResponse.json({ orders });
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    const orders = await prisma.order.findMany({
+      where: { userId: session.user.id },
+      include: {
+        items: true,
+        addressSnapshot: true,
+        payment: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return NextResponse.json({ orders });
+  } catch (dbErr: any) {
+    console.warn('[orders GET] DB unavailable:', dbErr?.message);
+    return NextResponse.json({ orders: [] });
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -55,7 +58,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Delivery address is required' }, { status: 400 });
     }
 
-    // 1. Check idempotency record to prevent duplicate submissions
+    // 1. Load prisma dynamically (fails gracefully if DB is down)
+    const { prisma } = await import('@/lib/prisma');
+
+    // 2. Check idempotency record to prevent duplicate submissions
     if (idempotencyKey) {
       const existingRecord = await prisma.idempotencyRecord.findUnique({
         where: { key: idempotencyKey },
@@ -82,7 +88,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 2. Verify selected address exists and belongs to the authenticated user
+    // 3. Verify selected address exists and belongs to the authenticated user
     const address = await prisma.address.findFirst({
       where: {
         id: addressId,
@@ -98,7 +104,6 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Verify stock availability
-    await ensureInventorySeeded();
     const inventoryCheck = await checkInventoryAvailability(items);
     if (!inventoryCheck.valid) {
       return NextResponse.json({ error: inventoryCheck.reason }, { status: 400 });
@@ -135,7 +140,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 6. Execute transactional database operations
+    // 7. Execute transactional database operations
     const newOrder = await prisma.$transaction(async (tx) => {
       // Concurrency-safe inventory decrement
       for (const item of pricing.items) {

@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { calculateOrderPricing } from '../src/lib/checkout/pricing';
-import { checkInventoryAvailability, ensureInventorySeeded } from '../src/lib/checkout/inventory';
+import { checkInventoryAvailability } from '../src/lib/checkout/inventory';
 import { MockPaymentAdapter } from '../src/lib/payments/payment-adapter';
 
 const prisma = new PrismaClient();
@@ -46,7 +46,6 @@ async function runTests() {
     // Test 2: Inventory Stock & Availability Checks
     // -------------------------------------------------------------
     console.log('\n2. Testing Inventory Availability and Seeding...');
-    await ensureInventorySeeded();
     const invCheckValid = await checkInventoryAvailability([{ productId: 'prod-1', quantity: 1 }]);
     assert(invCheckValid.valid, 'Valid product quantity allowed');
 
