@@ -100,8 +100,9 @@ export async function GET() {
       return NextResponse.json({ user: null });
     }
 
+    const rawValue = decodeURIComponent(sessionCookie.value);
     const payload = JSON.parse(
-      Buffer.from(sessionCookie.value, 'base64').toString('utf-8')
+      Buffer.from(rawValue, 'base64').toString('utf-8')
     );
 
     if (!payload.userId) {

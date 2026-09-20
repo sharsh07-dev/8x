@@ -51,8 +51,7 @@ function LoginFormContent() {
       }
 
       // Successful login -> Redirect to requested page or account
-      router.push(callbackUrl);
-      router.refresh();
+      window.location.href = callbackUrl;
     } catch (err: any) {
       setError('An unexpected connection error occurred. Please try again.');
       setLoading(false);
