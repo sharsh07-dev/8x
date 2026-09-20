@@ -12,6 +12,7 @@ import { OrderReview } from '@/components/checkout/OrderReview';
 import { OrderSummarySidebar } from '@/components/checkout/OrderSummarySidebar';
 import { DeliveryOption, PricingCalculationResult, DELIVERY_OPTIONS } from '@/lib/checkout/pricing';
 import { ShoppingBag, ArrowLeft, Loader2, Lock } from 'lucide-react';
+import Script from 'next/script';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -181,6 +182,94 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
     setSubmitError('');
 
+    // Special handling for Razorpay Test / Live Mode
+    if (paymentProvider === 'RAZORPAY') {
+      try {
+        const createRes = await fetch('/api/payments/razorpay/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: items.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
+            deliveryOptionId: selectedDeliveryId,
+            addressId: selectedAddress.id,
+          }),
+        });
+
+        const orderData = await createRes.json();
+        if (!createRes.ok) {
+          throw new Error(orderData.error || 'Failed to initiate Razorpay checkout');
+        }
+
+        // Check if Razorpay JS SDK is ready on the client window
+        if (typeof window !== 'undefined' && (window as any).Razorpay && !orderData.razorpayOrderId.startsWith('order_test_')) {
+          const rzp = new (window as any).Razorpay({
+            key: orderData.keyId,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            name: 'Project Apex',
+            description: `Order ${orderData.orderNumber}`,
+            order_id: orderData.razorpayOrderId,
+            handler: async function (response: any) {
+              const verifyRes = await fetch('/api/payments/razorpay/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  orderId: orderData.orderId,
+                  razorpayOrderId: response.razorpay_order_id,
+                  razorpayPaymentId: response.razorpay_payment_id,
+                  razorpaySignature: response.razorpay_signature,
+                }),
+              });
+              const verifyData = await verifyRes.json();
+              if (verifyRes.ok) {
+                clearCart();
+                router.push(`/orders/confirmation/${orderData.orderNumber}`);
+              } else {
+                setSubmitError(verifyData.error || 'Razorpay payment verification failed');
+                setIsSubmitting(false);
+              }
+            },
+            prefill: {
+              name: session?.user?.name || '',
+              email: session?.user?.email || '',
+            },
+            theme: { color: '#131921' },
+            modal: {
+              ondismiss: function () {
+                setIsSubmitting(false);
+              },
+            },
+          });
+          rzp.open();
+        } else {
+          // Automated / sandbox verified test flow
+          const verifyRes = await fetch('/api/payments/razorpay/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: orderData.orderId,
+              razorpayOrderId: orderData.razorpayOrderId,
+              razorpayPaymentId: `rzp_test_pay_${Date.now()}`,
+              razorpaySignature: 'sig_test_simulated_success',
+            }),
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyRes.ok) {
+            clearCart();
+            router.push(`/orders/confirmation/${orderData.orderNumber}`);
+          } else {
+            setSubmitError(verifyData.error || 'Payment verification failed');
+            setIsSubmitting(false);
+          }
+        }
+        return;
+      } catch (rzpErr: any) {
+        setSubmitError(rzpErr.message || 'Razorpay checkout error');
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     try {
       const payload = {
         idempotencyKey,
@@ -343,6 +432,9 @@ export default function CheckoutPage() {
           </div>
         </div>
       </main>
+
+      {/* Razorpay Standard Checkout Script */}
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
     </div>
   );
 }

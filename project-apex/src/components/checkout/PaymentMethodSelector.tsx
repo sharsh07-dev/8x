@@ -3,7 +3,7 @@
 import React from 'react';
 import { CreditCard, Banknote, Award, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
-export type PaymentProvider = 'SIMULATED_CARD' | 'CASH_ON_DELIVERY' | 'APEX_POINTS';
+export type PaymentProvider = 'RAZORPAY' | 'SIMULATED_CARD' | 'CASH_ON_DELIVERY' | 'APEX_POINTS';
 
 interface PaymentMethodSelectorProps {
   selectedProvider: PaymentProvider;
@@ -27,7 +27,7 @@ export function PaymentMethodSelector({
   setExpiry,
 }: PaymentMethodSelectorProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+    <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm font-sans">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
           <span className="flex items-center justify-center w-7 h-7 rounded-full bg-slate-900 text-white text-sm font-bold">3</span>
@@ -39,11 +39,50 @@ export function PaymentMethodSelector({
       <div className="mb-4 bg-amber-50 border border-amber-300 rounded-lg p-3 text-xs text-amber-900 flex items-start gap-2.5">
         <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
         <div>
-          <span className="font-bold">Developer Sandbox Mode:</span> All transactions are simulated for testing and evaluation. No real financial charges will be incurred. Never enter real banking or personal card information.
+          <span className="font-bold">Payment Security:</span> Razorpay Test Mode and verified sandbox adapters are enabled. No live charges will be incurred on personal cards.
         </div>
       </div>
 
       <div className="space-y-3">
+        {/* Option 0: Razorpay */}
+        <div
+          onClick={() => onSelectProvider('RAZORPAY')}
+          className={`p-4 rounded-lg border cursor-pointer transition-all ${
+            selectedProvider === 'RAZORPAY'
+              ? 'border-[#007185] bg-blue-50/20 ring-2 ring-[#007185]/20'
+              : 'border-gray-200 hover:border-gray-300 bg-white'
+          }`}
+        >
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <input
+                type="radio"
+                name="payment_method"
+                checked={selectedProvider === 'RAZORPAY'}
+                onChange={() => onSelectProvider('RAZORPAY')}
+                className="text-[#007185] focus:ring-[#007185] h-4 w-4"
+              />
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-blue-600" />
+                <span className="font-bold text-sm text-gray-900">Razorpay Secure Checkout</span>
+              </div>
+            </div>
+            <span className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded">
+              Razorpay Test Gateway (UPI / Cards)
+            </span>
+          </div>
+
+          {selectedProvider === 'RAZORPAY' && (
+            <div className="mt-3 pt-3 border-t border-blue-100 pl-7 text-xs text-gray-600 space-y-1">
+              <p className="font-medium text-gray-900">
+                Supports UPI (Google Pay, PhonePe, Paytm), Credit/Debit Cards, Netbanking, and Wallets.
+              </p>
+              <p className="text-[11px] text-gray-500">
+                You will be redirected to the secure Razorpay payment modal to complete payment verification.
+              </p>
+            </div>
+          )}
+        </div>
         {/* Option 1: Simulated Card */}
         <div
           onClick={() => onSelectProvider('SIMULATED_CARD')}
