@@ -90,7 +90,7 @@ export async function sendVerificationEmail(email: string, url: string) {
       </head>
       <body>
         <div class="container">
-          <a href="#" class="logo">apex<span>.</span></a>
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}" class="logo">apex<span>.</span></a>
           <div><span class="badge">Security Verification</span></div>
           <h1>Verify your Project Apex email address</h1>
           <p>Thank you for creating an account with Project Apex. To complete your registration and secure your account, please verify your email address by clicking the button below. This single-use link will expire in 24 hours.</p>
@@ -221,7 +221,7 @@ export async function sendPasswordResetEmail(email: string, url: string) {
       </head>
       <body>
         <div class="container">
-          <a href="#" class="logo">apex<span>.</span></a>
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}" class="logo">apex<span>.</span></a>
           <div><span class="badge">Password Assistance</span></div>
           <h1>Reset your Project Apex password</h1>
           <p>We received a request to reset the password associated with your account. Click the button below to choose a new, secure password. For security, this single-use link expires in 1 hour.</p>

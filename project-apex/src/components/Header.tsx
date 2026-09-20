@@ -177,6 +177,11 @@ export default function Header() {
                           Your Profile
                         </Link>
                       </li>
+                      <li>
+                        <Link href="/account/reviews" className="hover:text-[#007185] hover:underline block">
+                          Your Reviews
+                        </Link>
+                      </li>
                     </ul>
                   </div>
 

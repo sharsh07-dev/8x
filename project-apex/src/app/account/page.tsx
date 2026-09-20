@@ -62,14 +62,20 @@ export default function AccountOverviewPage() {
     {
       icon: CreditCard,
       title: 'Payment Options',
-      description: 'Manage payment methods, cards, and Apex wallet balances',
-      href: '#payments',
+      description: 'Review Razorpay integration, card payments, and checkout settings',
+      href: '/checkout',
     },
     {
       icon: HelpCircle,
-      title: 'Customer Service',
-      description: 'Browse help articles or contact our 24/7 dedicated support team',
-      href: '#support',
+      title: 'Customer Service & Help',
+      description: 'Browse help articles or track return requests and shipping policies',
+      href: '/help',
+    },
+    {
+      icon: Sparkles,
+      title: 'Your Reviews',
+      description: 'View feedback you submitted, track helpful votes, or manage reviews',
+      href: '/account/reviews',
     },
   ];
 

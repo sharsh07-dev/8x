@@ -244,8 +244,8 @@ export default function RegisterPage() {
         {/* Legal notice */}
         <p className="text-[11px] text-gray-600 mt-5 leading-relaxed">
           By creating an account, you agree to Project Apex's{' '}
-          <Link href="#" className="text-[#007185] hover:underline">Conditions of Use</Link> and{' '}
-          <Link href="#" className="text-[#007185] hover:underline">Privacy Notice</Link>.
+          <Link href="/legal/conditions-of-use" className="text-[#007185] hover:underline">Conditions of Use</Link> and{' '}
+          <Link href="/legal/privacy-notice" className="text-[#007185] hover:underline">Privacy Notice</Link>.
         </p>
 
         {/* Switch to login */}

@@ -24,46 +24,45 @@ export default function Footer() {
         <div>
           <h3 className="font-bold text-sm text-white mb-3">Get to Know Us</h3>
           <ul className="space-y-2 text-gray-300">
-            <li><Link href="#" className="hover:underline">Careers</Link></li>
-            <li><Link href="#" className="hover:underline">Blog</Link></li>
-            <li><Link href="#" className="hover:underline">About Apex</Link></li>
-            <li><Link href="#" className="hover:underline">Investor Relations</Link></li>
-            <li><Link href="#" className="hover:underline">Apex Devices</Link></li>
-            <li><Link href="#" className="hover:underline">Apex Science</Link></li>
+            <li><Link href="/about" className="hover:underline">About Apex</Link></li>
+            <li><Link href="/about" className="hover:underline">Careers</Link></li>
+            <li><Link href="/departments" className="hover:underline">Our Marketplace</Link></li>
+            <li><Link href="/collections/bestsellers-tech" className="hover:underline">Featured Tech</Link></li>
+            <li><Link href="/todays-deals" className="hover:underline">Today's Deals</Link></li>
           </ul>
         </div>
 
         <div>
-          <h3 className="font-bold text-sm text-white mb-3">Make Money with Us</h3>
+          <h3 className="font-bold text-sm text-white mb-3">Shop With Us</h3>
           <ul className="space-y-2 text-gray-300">
-            <li><Link href="#" className="hover:underline">Sell products on Apex</Link></li>
-            <li><Link href="#" className="hover:underline">Sell on Apex Business</Link></li>
-            <li><Link href="#" className="hover:underline">Sell apps on Apex</Link></li>
-            <li><Link href="#" className="hover:underline">Become an Affiliate</Link></li>
-            <li><Link href="#" className="hover:underline">Advertise Your Products</Link></li>
-            <li><Link href="#" className="hover:underline">Self-Publish with Us</Link></li>
+            <li><Link href="/electronics" className="hover:underline">Electronics &amp; Audio</Link></li>
+            <li><Link href="/clothing" className="hover:underline">Clothing &amp; Fashion</Link></li>
+            <li><Link href="/home-kitchen" className="hover:underline">Home &amp; Kitchen</Link></li>
+            <li><Link href="/beauty" className="hover:underline">Beauty &amp; Care</Link></li>
+            <li><Link href="/books" className="hover:underline">Books &amp; Stationery</Link></li>
+            <li><Link href="/sports" className="hover:underline">Sports &amp; Fitness</Link></li>
           </ul>
         </div>
 
         <div>
           <h3 className="font-bold text-sm text-white mb-3">Apex Payment Products</h3>
           <ul className="space-y-2 text-gray-300">
-            <li><Link href="#" className="hover:underline">Apex Business Card</Link></li>
-            <li><Link href="#" className="hover:underline">Shop with Points</Link></li>
-            <li><Link href="#" className="hover:underline">Reload Your Balance</Link></li>
-            <li><Link href="#" className="hover:underline">Apex Currency Converter</Link></li>
+            <li><Link href="/checkout" className="hover:underline">Razorpay Secure Checkout</Link></li>
+            <li><Link href="/checkout" className="hover:underline">Shop with Points</Link></li>
+            <li><Link href="/checkout" className="hover:underline">Cash on Delivery</Link></li>
+            <li><Link href="/help" className="hover:underline">Payment Security</Link></li>
           </ul>
         </div>
 
         <div>
           <h3 className="font-bold text-sm text-white mb-3">Let Us Help You</h3>
           <ul className="space-y-2 text-gray-300">
-            <li><Link href="#" className="hover:underline">Apex and COVID-19</Link></li>
-            <li><Link href="#" className="hover:underline">Your Account</Link></li>
-            <li><Link href="#" className="hover:underline">Your Orders</Link></li>
-            <li><Link href="#" className="hover:underline">Shipping Rates & Policies</Link></li>
-            <li><Link href="#" className="hover:underline">Returns & Replacements</Link></li>
-            <li><Link href="#" className="hover:underline">Help</Link></li>
+            <li><Link href="/account" className="hover:underline">Your Account</Link></li>
+            <li><Link href="/account/orders" className="hover:underline">Your Orders</Link></li>
+            <li><Link href="/account/addresses" className="hover:underline">Shipping &amp; Addresses</Link></li>
+            <li><Link href="/help" className="hover:underline">Returns &amp; Replacements</Link></li>
+            <li><Link href="/account/security" className="hover:underline">Login &amp; Security</Link></li>
+            <li><Link href="/help" className="hover:underline">Customer Help Hub</Link></li>
           </ul>
         </div>
       </div>
@@ -88,10 +87,10 @@ export default function Footer() {
       {/* Sub-footer copyright */}
       <div className="bg-[#131921] py-8 px-4 text-center text-gray-400 text-[11px] space-y-2">
         <div className="flex flex-wrap justify-center gap-4">
-          <Link href="#" className="hover:underline">Conditions of Use</Link>
-          <Link href="#" className="hover:underline">Privacy Notice</Link>
-          <Link href="#" className="hover:underline">Consumer Health Data Privacy</Link>
-          <Link href="#" className="hover:underline">Your Ads Privacy Choices</Link>
+          <Link href="/legal/conditions-of-use" className="hover:underline">Conditions of Use</Link>
+          <Link href="/legal/privacy-notice" className="hover:underline">Privacy Notice</Link>
+          <Link href="/legal/privacy-notice" className="hover:underline">Consumer Health Data Privacy</Link>
+          <Link href="/account/security" className="hover:underline">Your Security Choices</Link>
         </div>
         <p>© 2026, Project Apex, Inc. or its affiliates. Built for 8x assignment.</p>
       </div>
