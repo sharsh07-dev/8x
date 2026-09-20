@@ -14,6 +14,7 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     autoSignIn: false,
     async sendResetPassword({ user, url, token }, request) {
+      console.log('[Auth] Password reset URL:', url);
       await sendPasswordResetEmail(user.email, url);
     },
   },
@@ -21,6 +22,7 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     async sendVerificationEmail({ user, url, token }, request) {
+      console.log('[Auth] Verification URL:', url);
       await sendVerificationEmail(user.email, url);
     },
   },
