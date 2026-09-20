@@ -182,8 +182,8 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
     setSubmitError('');
 
-    // Special handling for Razorpay Test / Live Mode
-    if (paymentProvider === 'RAZORPAY') {
+    // Special handling for Razorpay Test / Live Mode (Cards, UPI, Netbanking)
+    if (paymentProvider === 'RAZORPAY' || paymentProvider === 'RAZORPAY_UPI') {
       try {
         const createRes = await fetch('/api/payments/razorpay/create-order', {
           method: 'POST',
@@ -202,10 +202,10 @@ export default function CheckoutPage() {
 
         // Check if Razorpay JS SDK is ready on the client window
         if (typeof window !== 'undefined' && (window as any).Razorpay && !orderData.razorpayOrderId.startsWith('order_test_')) {
-          const rzp = new (window as any).Razorpay({
+          const rzpOptions: any = {
             key: orderData.keyId,
             amount: orderData.amount,
-            currency: orderData.currency,
+            currency: orderData.currency || 'INR',
             name: 'Project Apex',
             description: `Order ${orderData.orderNumber}`,
             order_id: orderData.razorpayOrderId,
@@ -232,14 +232,54 @@ export default function CheckoutPage() {
             prefill: {
               name: session?.user?.name || '',
               email: session?.user?.email || '',
+              contact: orderData.customerPhone || selectedAddress?.phone || (session?.user as any)?.phoneNumber || '9876543210',
+              method: paymentProvider === 'RAZORPAY_UPI' ? 'upi' : undefined,
             },
             theme: { color: '#131921' },
+            config: {
+              display: {
+                blocks: {
+                  upi: {
+                    name: 'Pay using UPI Apps & QR',
+                    instruments: [
+                      {
+                        method: 'upi',
+                      },
+                    ],
+                  },
+                  cards: {
+                    name: 'Credit and Debit Cards',
+                    instruments: [
+                      {
+                        method: 'card',
+                      },
+                    ],
+                  },
+                  other: {
+                    name: 'Netbanking & Wallets',
+                    instruments: [
+                      {
+                        method: 'netbanking',
+                      },
+                      {
+                        method: 'wallet',
+                      },
+                    ],
+                  },
+                },
+                sequence: paymentProvider === 'RAZORPAY_UPI' ? ['block.upi', 'block.cards', 'block.other'] : ['block.cards', 'block.upi', 'block.other'],
+                preferences: {
+                  show_default_blocks: true,
+                },
+              },
+            },
             modal: {
               ondismiss: function () {
                 setIsSubmitting(false);
               },
             },
-          });
+          };
+          const rzp = new (window as any).Razorpay(rzpOptions);
           rzp.open();
         } else {
           // Automated / sandbox verified test flow

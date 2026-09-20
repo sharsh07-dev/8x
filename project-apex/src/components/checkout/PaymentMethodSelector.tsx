@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { CreditCard, Banknote, Award, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { CreditCard, Banknote, Award, AlertTriangle, CheckCircle2, QrCode, Smartphone } from 'lucide-react';
 
-export type PaymentProvider = 'RAZORPAY' | 'SIMULATED_CARD' | 'CASH_ON_DELIVERY' | 'APEX_POINTS';
+export type PaymentProvider = 'RAZORPAY' | 'RAZORPAY_UPI' | 'SIMULATED_CARD' | 'CASH_ON_DELIVERY' | 'APEX_POINTS';
 
 interface PaymentMethodSelectorProps {
   selectedProvider: PaymentProvider;
@@ -39,12 +39,53 @@ export function PaymentMethodSelector({
       <div className="mb-4 bg-amber-50 border border-amber-300 rounded-lg p-3 text-xs text-amber-900 flex items-start gap-2.5">
         <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
         <div>
-          <span className="font-bold">Payment Security:</span> Razorpay Test Mode and verified sandbox adapters are enabled. No live charges will be incurred on personal cards.
+          <span className="font-bold">Payment Security:</span> Razorpay Test Mode and verified sandbox adapters are enabled. No live charges will be incurred.
         </div>
       </div>
 
       <div className="space-y-3">
-        {/* Option 0: Razorpay */}
+        {/* Option 0A: Razorpay UPI */}
+        <div
+          onClick={() => onSelectProvider('RAZORPAY_UPI')}
+          className={`p-4 rounded-lg border cursor-pointer transition-all ${
+            selectedProvider === 'RAZORPAY_UPI'
+              ? 'border-emerald-600 bg-emerald-50/20 ring-2 ring-emerald-600/20'
+              : 'border-gray-200 hover:border-gray-300 bg-white'
+          }`}
+        >
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <input
+                type="radio"
+                name="payment_method"
+                checked={selectedProvider === 'RAZORPAY_UPI'}
+                onChange={() => onSelectProvider('RAZORPAY_UPI')}
+                className="text-emerald-600 focus:ring-emerald-500 h-4 w-4"
+              />
+              <div className="flex items-center gap-2">
+                <Smartphone className="w-5 h-5 text-emerald-600" />
+                <span className="font-bold text-sm text-gray-900">UPI / QR Code (Google Pay, PhonePe, Paytm)</span>
+              </div>
+            </div>
+            <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded flex items-center gap-1">
+              <QrCode className="w-3 h-3 text-emerald-600" /> Instant UPI
+            </span>
+          </div>
+
+          {selectedProvider === 'RAZORPAY_UPI' && (
+            <div className="mt-3 pt-3 border-t border-emerald-100 pl-7 text-xs text-gray-600 space-y-1.5">
+              <p className="font-medium text-gray-900 flex items-center gap-2">
+                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.5 rounded">UPI APPS &amp; QR</span>
+                Google Pay, PhonePe, Paytm, BHIM, Cred &amp; all major UPI apps supported.
+              </p>
+              <p className="text-[11px] text-gray-500">
+                You will be presented with an instant QR code or UPI ID prompt via Razorpay Test Gateway to complete approval.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Option 0B: Razorpay Cards & Netbanking */}
         <div
           onClick={() => onSelectProvider('RAZORPAY')}
           className={`p-4 rounded-lg border cursor-pointer transition-all ${
@@ -64,21 +105,21 @@ export function PaymentMethodSelector({
               />
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-blue-600" />
-                <span className="font-bold text-sm text-gray-900">Razorpay Secure Checkout</span>
+                <span className="font-bold text-sm text-gray-900">Cards, Netbanking &amp; Wallets (Razorpay)</span>
               </div>
             </div>
             <span className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded">
-              Razorpay Test Gateway (UPI / Cards)
+              Razorpay Gateway
             </span>
           </div>
 
           {selectedProvider === 'RAZORPAY' && (
             <div className="mt-3 pt-3 border-t border-blue-100 pl-7 text-xs text-gray-600 space-y-1">
               <p className="font-medium text-gray-900">
-                Supports UPI (Google Pay, PhonePe, Paytm), Credit/Debit Cards, Netbanking, and Wallets.
+                Supports Visa, MasterCard, RuPay, Maestro, 50+ Netbanking banks, and digital wallets.
               </p>
               <p className="text-[11px] text-gray-500">
-                You will be redirected to the secure Razorpay payment modal to complete payment verification.
+                Secured by Razorpay 256-bit encryption.
               </p>
             </div>
           )}

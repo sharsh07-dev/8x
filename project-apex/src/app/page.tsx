@@ -59,12 +59,12 @@ export default function Home() {
     <div className="min-h-screen bg-[#e3e6e6] pb-16">
       {/* Hero Banner Section */}
       <div className="relative">
-        <div className={`relative h-[360px] sm:h-[440px] md:h-[500px] w-full bg-gradient-to-r ${heroBanners[heroIndex].gradient} transition-all duration-700 flex items-center`}>
+        <div className={`relative min-h-[460px] sm:min-h-[500px] md:min-h-[540px] w-full bg-gradient-to-r ${heroBanners[heroIndex].gradient} transition-all duration-700 flex flex-col justify-start pt-8 sm:pt-12 md:pt-14 pb-28 md:pb-36`}>
           {/* Subtle background texture overlay */}
           <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
           {/* Banner Text Content */}
-          <div className="max-w-6xl mx-auto px-6 sm:px-12 w-full z-10">
+          <div className="max-w-7xl mx-auto px-6 sm:px-12 w-full z-10">
             <div className="max-w-xl space-y-3">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#febd69] text-[#131921] shadow-sm uppercase tracking-wider">
                 <Sparkles className="w-3.5 h-3.5" />
@@ -79,7 +79,7 @@ export default function Home() {
               <div className="pt-2 flex items-center gap-4">
                 <Link 
                   href="/todays-deals"
-                  className="inline-flex items-center gap-2 bg-[#ffd814] hover:bg-[#f7ca00] text-[#0f1111] font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all active:scale-95"
+                  className="inline-flex items-center gap-2 bg-[#ffd814] hover:bg-[#f7ca00] text-[#0f1111] font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
                 >
                   {heroBanners[heroIndex].cta}
                   <ArrowRight className="w-4 h-4" />
@@ -94,28 +94,28 @@ export default function Home() {
           {/* Carousel Arrows */}
           <button 
             onClick={handlePrevHero}
-            className="absolute left-2 top-1/3 -translate-y-1/2 p-2.5 rounded-md bg-black/20 hover:bg-black/40 text-white transition-colors cursor-pointer"
+            className="absolute left-2 sm:left-4 top-36 sm:top-40 -translate-y-1/2 p-2.5 rounded-md bg-black/25 hover:bg-black/50 text-white transition-colors cursor-pointer z-20"
             aria-label="Previous Banner"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <button 
             onClick={handleNextHero}
-            className="absolute right-2 top-1/3 -translate-y-1/2 p-2.5 rounded-md bg-black/20 hover:bg-black/40 text-white transition-colors cursor-pointer"
+            className="absolute right-2 sm:right-4 top-36 sm:top-40 -translate-y-1/2 p-2.5 rounded-md bg-black/25 hover:bg-black/50 text-white transition-colors cursor-pointer z-20"
             aria-label="Next Banner"
           >
             <ChevronRight className="w-6 h-6" />
           </button>
 
           {/* Bottom Gradient Fade to merge smoothly into cards */}
-          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#e3e6e6] via-[#e3e6e6]/60 to-transparent pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-[#e3e6e6] via-[#e3e6e6]/70 to-transparent pointer-events-none" />
         </div>
       </div>
 
-      {/* Main Content Area: Overlapping Category Cards */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative -mt-24 sm:-mt-36 md:-mt-48 z-20 space-y-8">
-        {/* Floating Category Teaser Cards */}
-        <div className="max-w-6xl mx-auto px-4 -mt-24 sm:-mt-32 md:-mt-44 relative z-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Main Content Area: Category Cards */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative -mt-16 sm:-mt-24 md:-mt-28 z-20 space-y-8">
+        {/* Category Teaser Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1 */}
           <div className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between">
             <div>

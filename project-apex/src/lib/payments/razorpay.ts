@@ -64,7 +64,7 @@ export async function createRazorpayOrder(params: CreateOrderParams): Promise<Ra
     try {
       const order = await client.orders.create({
         amount: Math.round(params.amount),
-        currency: params.currency || 'USD',
+        currency: params.currency || 'INR',
         receipt: params.receipt,
         notes: params.notes,
       });

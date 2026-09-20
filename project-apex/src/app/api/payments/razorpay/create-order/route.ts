@@ -104,11 +104,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 5. Initiate Razorpay order (amount in cents)
-    const amountInCents = Math.round(pricing.total * 100);
+    // 5. Initiate Razorpay order in INR (amount in paise) to enable UPI & QR
+    const amountInPaise = Math.round(pricing.total * 100);
     const rzpOrder = await createRazorpayOrder({
-      amount: amountInCents,
-      currency: 'USD',
+      amount: amountInPaise,
+      currency: 'INR',
       receipt: orderNumber,
       notes: {
         orderId: pendingOrder.id,
@@ -120,12 +120,13 @@ export async function POST(request: NextRequest) {
       orderId: pendingOrder.id,
       orderNumber: pendingOrder.orderNumber,
       razorpayOrderId: rzpOrder.id,
-      amount: amountInCents,
-      currency: 'USD',
+      amount: amountInPaise,
+      currency: 'INR',
       keyId: getRazorpayPublicKey(),
       isConfigured: isRazorpayConfigured(),
       customerName: session.user.name,
       customerEmail: session.user.email,
+      customerPhone: address?.phone || (session.user as any).phoneNumber || '9876543210',
     });
   } catch (error: any) {
     console.error('Error initiating Razorpay order:', error);
