@@ -47,11 +47,17 @@ let analytics: any = null;
 if (typeof window !== 'undefined') {
   import('firebase/analytics')
     .then(({ getAnalytics, isSupported }) => {
-      isSupported().then((supported) => {
-        if (supported) {
-          analytics = getAnalytics(app);
-        }
-      });
+      isSupported()
+        .then((supported) => {
+          if (supported) {
+            try {
+              analytics = getAnalytics(app);
+            } catch {
+              // Blocked by client adblocker, ignore safely
+            }
+          }
+        })
+        .catch(() => {});
     })
     .catch(() => {});
 }

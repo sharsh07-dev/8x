@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyFirebaseIdToken, syncFirebaseUserToDatabase } from '@/lib/firebase-admin';
 import { prisma } from '@/lib/prisma';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 
 const SESSION_COOKIE_NAME = 'apex_firebase_session';
 
@@ -83,6 +84,19 @@ export async function GET() {
     const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME);
 
     if (!sessionCookie?.value) {
+      const reqHeaders = await headers();
+      const betterSession = await auth.api.getSession({ headers: reqHeaders });
+      if (betterSession?.user) {
+        return NextResponse.json({
+          user: {
+            id: betterSession.user.id,
+            name: betterSession.user.name,
+            email: betterSession.user.email,
+            emailVerified: betterSession.user.emailVerified,
+            image: betterSession.user.image,
+          },
+        });
+      }
       return NextResponse.json({ user: null });
     }
 

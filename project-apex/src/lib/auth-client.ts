@@ -121,6 +121,20 @@ async function internalSignIn(credentials: { email: string; password: string; ca
     const sessionData = await res.json();
     return { data: sessionData, error: null };
   } catch (err: any) {
+    // If Firebase Email/Password provider is not yet enabled in Firebase Console, fallback seamlessly
+    if (
+      err.code === 'auth/configuration-not-found' ||
+      err.code === 'auth/operation-not-allowed' ||
+      err.code === 'auth/project-not-found' ||
+      err.message?.includes('configuration-not-found')
+    ) {
+      console.warn('Firebase Email/Password provider not enabled in Firebase Console. Falling back to database auth.');
+      return await legacyAuthClient.signIn.email({
+        email: credentials.email,
+        password: credentials.password,
+      });
+    }
+
     let friendlyMessage = err.message || 'Failed to sign in.';
     if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
       friendlyMessage = 'Invalid email or password. Please verify your credentials.';
@@ -157,6 +171,21 @@ async function internalSignUp(data: { email: string; password: string; name: str
     const sessionData = await res.json();
     return { data: sessionData, error: null };
   } catch (err: any) {
+    // If Firebase Email/Password provider is not yet enabled in Firebase Console, fallback seamlessly
+    if (
+      err.code === 'auth/configuration-not-found' ||
+      err.code === 'auth/operation-not-allowed' ||
+      err.code === 'auth/project-not-found' ||
+      err.message?.includes('configuration-not-found')
+    ) {
+      console.warn('Firebase Email/Password provider not enabled in Firebase Console. Falling back to database auth.');
+      return await legacyAuthClient.signUp.email({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+      });
+    }
+
     let friendlyMessage = err.message || 'Failed to create account.';
     if (err.code === 'auth/email-already-in-use') {
       friendlyMessage = 'An account with this email address already exists. Please sign in instead.';
