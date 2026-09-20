@@ -15,6 +15,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,9 +44,10 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
+      const cleanEmail = email.trim().toLowerCase();
       const res = await signUp.email({
         name: name.trim(),
-        email: email.trim().toLowerCase(),
+        email: cleanEmail,
         password,
         callbackURL: '/verify-email',
       });
@@ -61,8 +63,26 @@ export default function RegisterPage() {
         return;
       }
 
-      // Successful registration -> Navigate to verify email notice
-      router.push(`/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}`);
+      // If phone was provided, register phone OTP
+      if (phone.trim()) {
+        try {
+          await fetch('/api/auth/phone-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'send',
+              email: cleanEmail,
+              phoneNumber: phone.trim(),
+            }),
+          });
+        } catch {
+          // ignore background phone save error
+        }
+      }
+
+      // Successful registration -> Navigate to verify page with phone pre-filled
+      const phoneParam = phone.trim() ? `&phone=${encodeURIComponent(phone.trim())}` : '';
+      router.push(`/verify-email?email=${encodeURIComponent(cleanEmail)}${phoneParam}`);
     } catch (err: any) {
       setError('A network error occurred. Please try again.');
       setLoading(false);
@@ -113,7 +133,7 @@ export default function RegisterPage() {
           {/* Email */}
           <div>
             <label htmlFor="email" className="block text-xs font-bold text-gray-900 mb-1">
-              Mobile number or email
+              Email address
             </label>
             <input
               id="email"
@@ -123,6 +143,21 @@ export default function RegisterPage() {
               placeholder="name@example.com"
               autoComplete="email"
               required
+              className="w-full px-3 py-2 text-xs border border-gray-400 rounded focus:border-[#e77600] focus:ring-1 focus:ring-[#e77600] outline-none transition-colors"
+            />
+          </div>
+
+          {/* Mobile Number (Optional for SMS OTP) */}
+          <div>
+            <label htmlFor="phone" className="block text-xs font-bold text-gray-900 mb-1">
+              Mobile number <span className="font-normal text-gray-500">(for instant SMS OTP verification)</span>
+            </label>
+            <input
+              id="phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="e.g. 7822983308 or +91 7822983308"
               className="w-full px-3 py-2 text-xs border border-gray-400 rounded focus:border-[#e77600] focus:ring-1 focus:ring-[#e77600] outline-none transition-colors"
             />
           </div>
