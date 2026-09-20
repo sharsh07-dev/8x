@@ -13,12 +13,17 @@ import {
 } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 import { categories } from '@/data/mockProducts';
+import { useSession, signOut } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
   
+  const { data: session } = useSession();
   const totalItems = useCartStore((state) => state.getTotalItems());
   const setIsDrawerOpen = useCartStore((state) => state.setIsDrawerOpen);
 
@@ -87,20 +92,103 @@ export default function Header() {
 
         {/* Right Section / Nav Links */}
         <div className="flex items-center gap-1 sm:gap-2">
-          {/* Account */}
-          <Link 
-            href="#account" 
-            className="hidden sm:flex flex-col p-1.5 border border-transparent hover:border-white rounded cursor-pointer leading-tight text-xs"
+          {/* Account & Lists */}
+          <div 
+            className="relative hidden sm:block"
+            onMouseEnter={() => setShowAccountMenu(true)}
+            onMouseLeave={() => setShowAccountMenu(false)}
           >
-            <span className="text-gray-300 text-[11px]">Hello, sign in</span>
-            <span className="font-bold flex items-center gap-0.5">
-              Account & Lists <ChevronDown className="w-3 h-3 text-gray-400" />
-            </span>
-          </Link>
+            <Link 
+              href={session?.user ? "/account" : "/login"} 
+              className="flex flex-col p-1.5 border border-transparent hover:border-white rounded cursor-pointer leading-tight text-xs"
+            >
+              <span className="text-gray-300 text-[11px] truncate max-w-[120px]">
+                {session?.user ? `Hello, ${session.user.name.split(' ')[0]}` : 'Hello, sign in'}
+              </span>
+              <span className="font-bold flex items-center gap-0.5">
+                Account & Lists <ChevronDown className="w-3 h-3 text-gray-400" />
+              </span>
+            </Link>
+
+            {/* Account Dropdown Menu */}
+            {showAccountMenu && (
+              <div className="absolute right-0 top-full pt-1 z-50 w-64 select-none">
+                <div className="bg-white rounded-md shadow-2xl border border-gray-300 text-gray-900 p-4 text-xs space-y-3">
+                  {!session?.user ? (
+                    <div className="text-center pb-3 border-b border-gray-200">
+                      <Link
+                        href="/login"
+                        className="inline-block w-full py-2 bg-[#ffd814] hover:bg-[#f7ca00] text-[#0f1111] font-bold rounded-full text-center shadow-xs border border-[#fcd34d]"
+                      >
+                        Sign in
+                      </Link>
+                      <p className="text-[11px] text-gray-600 mt-2">
+                        New customer?{' '}
+                        <Link href="/register" className="text-[#007185] font-semibold hover:underline">
+                          Start here.
+                        </Link>
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="pb-2 border-b border-gray-100">
+                      <p className="font-bold text-gray-900">{session.user.name}</p>
+                      <p className="text-[11px] text-gray-500 truncate">{session.user.email}</p>
+                    </div>
+                  )}
+
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1.5">Your Account</h3>
+                    <ul className="space-y-1.5 text-gray-700">
+                      <li>
+                        <Link href="/account" className="hover:text-[#007185] hover:underline block">
+                          Your Account Overview
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/account/orders" className="hover:text-[#007185] hover:underline block">
+                          Your Orders
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/account/addresses" className="hover:text-[#007185] hover:underline block">
+                          Your Addresses
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/account/security" className="hover:text-[#007185] hover:underline block">
+                          Login & Security
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/account/profile" className="hover:text-[#007185] hover:underline block">
+                          Your Profile
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {session?.user && (
+                    <div className="pt-2 border-t border-gray-200">
+                      <button
+                        onClick={async () => {
+                          await signOut();
+                          router.push('/');
+                          router.refresh();
+                        }}
+                        className="text-red-700 hover:underline font-semibold block text-left w-full cursor-pointer"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Returns & Orders */}
           <Link 
-            href="#orders" 
+            href={session?.user ? "/account/orders" : "/login?callbackUrl=/account/orders"} 
             className="hidden md:flex flex-col p-1.5 border border-transparent hover:border-white rounded cursor-pointer leading-tight text-xs"
           >
             <span className="text-gray-300 text-[11px]">Returns</span>
