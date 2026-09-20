@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from '@/lib/auth-client';
@@ -19,9 +19,15 @@ import {
 export default function AccountOverviewPage() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
+  const hasMounted = useRef(false);
 
   useEffect(() => {
-    if (!isPending && !session?.user) {
+    hasMounted.current = true;
+  }, []);
+
+  useEffect(() => {
+    // Only redirect after mount + session fetch complete + no user found
+    if (hasMounted.current && !isPending && !session?.user) {
       router.push('/login?callbackUrl=/account');
     }
   }, [session, isPending, router]);

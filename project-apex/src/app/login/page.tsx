@@ -3,8 +3,8 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn } from '@/lib/auth-client';
-import { Eye, EyeOff, AlertCircle, CheckCircle2, Lock, ArrowRight } from 'lucide-react';
+import { signIn, useSession } from '@/lib/auth-client';
+import { Eye, EyeOff, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 
 function LoginFormContent() {
   const router = useRouter();
@@ -19,6 +19,25 @@ function LoginFormContent() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [signedIn, setSignedIn] = useState(false);
+
+  const { data: session, isPending } = useSession();
+
+  // If already logged in, skip the login page entirely
+  useEffect(() => {
+    if (!isPending && session?.user) {
+      router.replace(callbackUrl);
+    }
+  }, [session, isPending, callbackUrl, router]);
+
+  // After a successful sign-in, wait for useSession to confirm the user
+  // then redirect — this avoids the race condition where the account page
+  // redirects back because the session cookie isn't ready yet.
+  useEffect(() => {
+    if (signedIn && !isPending && session?.user) {
+      router.replace(callbackUrl);
+    }
+  }, [signedIn, session, isPending, callbackUrl, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,13 +69,29 @@ function LoginFormContent() {
         return;
       }
 
-      // Successful login -> Redirect to requested page or account
-      window.location.href = callbackUrl;
+      // Mark as signed-in — the useEffect above will redirect once useSession
+      // confirms the session is live (avoids race condition with cookie/DB)
+      setSignedIn(true);
+
+      // Fallback: if session doesn't update within 3s, do a hard redirect
+      setTimeout(() => {
+        window.location.href = callbackUrl;
+      }, 3000);
     } catch (err: any) {
       setError('An unexpected connection error occurred. Please try again.');
       setLoading(false);
     }
   };
+
+  // While redirecting, show a spinner
+  if (signedIn) {
+    return (
+      <div className="w-full max-w-md bg-white p-8 rounded-lg border border-gray-300 shadow-sm text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f08804] mx-auto mb-3" />
+        <p className="text-sm text-gray-600">Signing you in...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md bg-white p-7 sm:p-8 rounded-lg border border-gray-300 shadow-sm">
