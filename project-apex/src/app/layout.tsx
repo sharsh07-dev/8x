@@ -18,6 +18,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Project Apex: Online Shopping for Electronics, Apparel, Computers & More",
   description: "Low prices on top electronics, audio gear, smart watches, lifestyle items with fast, free delivery.",
+  icons: {
+    icon: [
+      { url: "/icon.jpg", type: "image/jpeg" },
+      { url: "/favicon.jpg", type: "image/jpeg" },
+    ],
+    shortcut: "/favicon.jpg",
+    apple: "/icon.jpg",
+  },
 };
 
 export default function RootLayout({
