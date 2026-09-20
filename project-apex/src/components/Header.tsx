@@ -15,6 +15,7 @@ import { useCartStore } from '@/store/useCartStore';
 import { categories } from '@/data/mockProducts';
 import { useSession, signOut } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
+import { MobileNavDrawer } from '@/components/navigation/MobileNavDrawer';
 
 export default function Header() {
   const router = useRouter();
@@ -22,10 +23,19 @@ export default function Header() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [isNavDrawerOpen, setIsNavDrawerOpen] = useState(false);
   
   const { data: session } = useSession();
   const totalItems = useCartStore((state) => state.getTotalItems());
   const setIsDrawerOpen = useCartStore((state) => state.setIsDrawerOpen);
+
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) params.set('q', searchQuery.trim());
+    if (selectedCategory && selectedCategory !== 'All') params.set('category', selectedCategory);
+    router.push(`/search?${params.toString()}`);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -58,7 +68,10 @@ export default function Header() {
         </div>
 
         {/* Search Bar */}
-        <div className="flex-1 max-w-3xl flex items-center h-10 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-[#f08804] bg-white text-gray-900 shadow-inner">
+        <form 
+          onSubmit={handleSearch}
+          className="flex-1 max-w-3xl flex items-center h-10 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-[#f08804] bg-white text-gray-900 shadow-inner"
+        >
           <div className="relative hidden sm:flex items-center bg-gray-100 hover:bg-gray-200 border-r border-gray-300 text-xs text-gray-700 px-3 h-full cursor-pointer transition-colors">
             <select 
               value={selectedCategory}
@@ -75,20 +88,20 @@ export default function Header() {
 
           <input 
             type="text" 
-            placeholder="Search Project Apex..."
+            placeholder="Search Project Apex catalog..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1 h-full px-3 text-sm text-gray-900 outline-none placeholder:text-gray-400"
           />
 
           <button 
-            type="button"
+            type="submit"
             className="bg-[#febd69] hover:bg-[#f3a847] text-[#131921] h-full px-4 flex items-center justify-center transition-colors cursor-pointer"
             aria-label="Search"
           >
             <Search className="w-5 h-5 text-[#131921] stroke-[2.5]" />
           </button>
-        </div>
+        </form>
 
         {/* Right Section / Nav Links */}
         <div className="flex items-center gap-1 sm:gap-2">
@@ -217,34 +230,51 @@ export default function Header() {
 
       {/* Sub Header Navigation Bar */}
       <div className="bg-[#232f3e] px-4 py-1.5 flex items-center gap-4 text-xs font-medium overflow-x-auto no-scrollbar whitespace-nowrap">
-        <button className="flex items-center gap-1 p-1 border border-transparent hover:border-white rounded cursor-pointer font-bold">
+        <button 
+          type="button"
+          onClick={() => setIsNavDrawerOpen(true)}
+          className="flex items-center gap-1 p-1 border border-transparent hover:border-white rounded cursor-pointer font-bold transition"
+          aria-label="Open All Departments Menu"
+        >
           <Menu className="w-4 h-4" />
           <span>All</span>
         </button>
 
-        <Link href="#deals" className="p-1 border border-transparent hover:border-white rounded cursor-pointer flex items-center gap-1 text-[#febd69]">
+        <Link href="/todays-deals" className="p-1 border border-transparent hover:border-white rounded cursor-pointer flex items-center gap-1 text-[#febd69] font-bold">
           <Sparkles className="w-3.5 h-3.5" />
           Today's Deals
         </Link>
-        <Link href="#prime" className="p-1 border border-transparent hover:border-white rounded cursor-pointer">
-          Customer Service
+        <Link href="/clothing" className="p-1 border border-transparent hover:border-white rounded cursor-pointer font-semibold">
+          Clothing &amp; Fashion
         </Link>
-        <Link href="#registry" className="p-1 border border-transparent hover:border-white rounded cursor-pointer">
-          Registry
-        </Link>
-        <Link href="#gift-cards" className="p-1 border border-transparent hover:border-white rounded cursor-pointer">
-          Gift Cards
-        </Link>
-        <Link href="#sell" className="p-1 border border-transparent hover:border-white rounded cursor-pointer">
-          Sell
-        </Link>
-        <Link href="#electronics" className="p-1 border border-transparent hover:border-white rounded cursor-pointer hidden sm:inline-block">
+        <Link href="/electronics" className="p-1 border border-transparent hover:border-white rounded cursor-pointer">
           Electronics
         </Link>
-        <Link href="#home" className="p-1 border border-transparent hover:border-white rounded cursor-pointer hidden md:inline-block">
-          Home & Kitchen
+        <Link href="/home-kitchen" className="p-1 border border-transparent hover:border-white rounded cursor-pointer hidden sm:inline-block">
+          Home &amp; Kitchen
+        </Link>
+        <Link href="/beauty" className="p-1 border border-transparent hover:border-white rounded cursor-pointer hidden sm:inline-block">
+          Beauty &amp; Care
+        </Link>
+        <Link href="/books" className="p-1 border border-transparent hover:border-white rounded cursor-pointer hidden md:inline-block">
+          Books
+        </Link>
+        <Link href="/sports" className="p-1 border border-transparent hover:border-white rounded cursor-pointer hidden md:inline-block">
+          Sports &amp; Fitness
+        </Link>
+        <Link href="/collections/bestsellers-tech" className="p-1 border border-transparent hover:border-white rounded cursor-pointer hidden lg:inline-block text-amber-300">
+          Best Sellers
+        </Link>
+        <Link href="/departments" className="p-1 border border-transparent hover:border-white rounded cursor-pointer text-gray-300 hover:text-white">
+          All Departments
         </Link>
       </div>
+
+      {/* Slide-out Mobile & Desktop Navigation Drawer */}
+      <MobileNavDrawer
+        isOpen={isNavDrawerOpen}
+        onClose={() => setIsNavDrawerOpen(false)}
+      />
     </header>
   );
 }
