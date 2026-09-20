@@ -21,6 +21,10 @@ export const useCartStore = create<CartState>()(
       isDrawerOpen: false,
       setIsDrawerOpen: (open) => set({ isDrawerOpen: open }),
       addToCart: (product, quantity = 1, openDrawer = true) => {
+        if (!product.inStock || product.stock <= 0) {
+          return;
+        }
+
         set((state) => {
           const existingItemIndex = state.items.findIndex(
             (item) => item.product.id === product.id
@@ -28,10 +32,13 @@ export const useCartStore = create<CartState>()(
 
           let updatedItems;
           if (existingItemIndex > -1) {
+            const currentQty = state.items[existingItemIndex].quantity;
+            const newQty = Math.min(product.stock, currentQty + quantity);
             updatedItems = [...state.items];
-            updatedItems[existingItemIndex].quantity += quantity;
+            updatedItems[existingItemIndex].quantity = newQty;
           } else {
-            updatedItems = [...state.items, { product, quantity }];
+            const cappedQty = Math.min(product.stock, quantity);
+            updatedItems = [...state.items, { product, quantity: cappedQty }];
           }
 
           return { 
@@ -51,9 +58,13 @@ export const useCartStore = create<CartState>()(
           return;
         }
         set((state) => ({
-          items: state.items.map((item) =>
-            item.product.id === productId ? { ...item, quantity } : item
-          ),
+          items: state.items.map((item) => {
+            if (item.product.id === productId) {
+              const maxAllowed = item.product.stock || 99;
+              return { ...item, quantity: Math.min(maxAllowed, quantity) };
+            }
+            return item;
+          }),
         }));
       },
       clearCart: () => set({ items: [] }),
