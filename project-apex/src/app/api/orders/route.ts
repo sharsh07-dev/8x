@@ -5,6 +5,7 @@ import { headers } from 'next/headers';
 import { calculateOrderPricing, DELIVERY_OPTIONS } from '@/lib/checkout/pricing';
 import { checkInventoryAvailability, ensureInventorySeeded } from '@/lib/checkout/inventory';
 import { sendOrderConfirmationEmail } from '@/lib/email';
+import { MockPaymentAdapter, PaymentMethodType } from '@/lib/payments/payment-adapter';
 
 export async function GET(req: NextRequest) {
   const session = await auth.api.getSession({
@@ -118,7 +119,27 @@ export async function POST(req: NextRequest) {
     const randomSuffix = Math.floor(100000 + Math.random() * 900000);
     const orderNumber = `APX-2026-${randomSuffix}`;
 
-    // 5. Execute transactional database operations
+    // 5. Process payment via configured adapter
+    const paymentResult = await MockPaymentAdapter.processPayment({
+      orderId: 'pending',
+      orderNumber,
+      amount: pricing.total,
+      currency: pricing.currency,
+      provider: paymentProvider as PaymentMethodType,
+      cardName: paymentDetails?.cardName,
+      cardLast4: paymentDetails?.cardLast4 || (paymentProvider === 'SIMULATED_CARD' ? '4242' : undefined),
+      cardBrand: paymentDetails?.cardBrand || (paymentProvider === 'SIMULATED_CARD' ? 'Visa' : undefined),
+      simulateFailure: paymentDetails?.simulateFailure || paymentDetails?.cardLast4 === '0000',
+    });
+
+    if (!paymentResult.success && paymentResult.status === 'FAILED') {
+      return NextResponse.json(
+        { error: paymentResult.errorMessage || 'Simulated payment was declined' },
+        { status: 402 }
+      );
+    }
+
+    // 6. Execute transactional database operations
     const newOrder = await prisma.$transaction(async (tx) => {
       // Concurrency-safe inventory decrement
       for (const item of pricing.items) {
@@ -139,7 +160,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Determine initial order & payment status
-      const paymentStatus = paymentProvider === 'CASH_ON_DELIVERY' ? 'PENDING' : 'PAID';
+      const paymentStatus = paymentResult.status;
       const orderStatus = 'CONFIRMED';
 
       // Create Order
@@ -182,7 +203,7 @@ export async function POST(req: NextRequest) {
           payment: {
             create: {
               provider: paymentProvider,
-              providerReference: `SIM-PAY-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
+              providerReference: paymentResult.providerReference,
               amount: pricing.total,
               currency: pricing.currency,
               status: paymentStatus,
