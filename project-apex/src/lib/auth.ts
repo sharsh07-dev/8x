@@ -3,11 +3,27 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from '@/lib/prisma';
 import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email';
 
+function getServerBaseURL(): string {
+  let raw = process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  raw = (raw || '').trim();
+  if (raw.startsWith('"') && raw.endsWith('"')) raw = raw.slice(1, -1).trim();
+  if (raw.startsWith("'") && raw.endsWith("'")) raw = raw.slice(1, -1).trim();
+  if (raw.includes('<') || raw.includes('>') || (!raw.startsWith('http://') && !raw.startsWith('https://'))) {
+    return 'http://localhost:3000';
+  }
+  try {
+    const parsed = new URL(raw);
+    return parsed.origin;
+  } catch {
+    return 'http://localhost:3000';
+  }
+}
+
 export const baseAuth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
-  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+  baseURL: getServerBaseURL(),
   secret: process.env.BETTER_AUTH_SECRET || 'apex-dev-fallback-secret-2026-xyz',
   emailAndPassword: {
     enabled: true,

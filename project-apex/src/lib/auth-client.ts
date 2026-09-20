@@ -16,9 +16,28 @@ import {
 } from './firebase';
 import { createAuthClient } from 'better-auth/react';
 
+function getClientBaseURL(): string {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin;
+  }
+  let raw = process.env.NEXT_PUBLIC_APP_URL || process.env.BETTER_AUTH_URL || 'http://localhost:3000';
+  raw = (raw || '').trim();
+  if (raw.startsWith('"') && raw.endsWith('"')) raw = raw.slice(1, -1).trim();
+  if (raw.startsWith("'") && raw.endsWith("'")) raw = raw.slice(1, -1).trim();
+  if (raw.includes('<') || raw.includes('>') || (!raw.startsWith('http://') && !raw.startsWith('https://'))) {
+    return 'http://localhost:3000';
+  }
+  try {
+    const parsed = new URL(raw);
+    return parsed.origin;
+  } catch {
+    return 'http://localhost:3000';
+  }
+}
+
 // Legacy client for backward compatibility
 export const legacyAuthClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  baseURL: getClientBaseURL(),
 });
 
 export interface ApexUser {
