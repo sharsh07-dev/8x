@@ -1,10 +1,7 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 <div align="center">
 
-## Getting Started
-<img src="./src/app/icon.jpg" alt="Project Apex Logo" width="80" height="80" style="border-radius:12px;" />
+<img src="./project-apex/src/app/icon.jpg" alt="Project Apex Logo" width="80" height="80" style="border-radius:12px;" />
 
-First, run the development server:
 # Project Apex
 
 ### A full-stack e-commerce platform built with Next.js 16 — fast, modern, and production-ready.
@@ -25,28 +22,28 @@ First, run the development server:
 
 <table>
   <tr>
-    <td align="center"><img src="./docs/screenshots/homepage.png" width="420" alt="Homepage"/><br/><sub><b>Homepage — Hero & Deals</b></sub></td>
-    <td align="center"><img src="./docs/screenshots/hero_section.png" width="420" alt="Hero Section"/><br/><sub><b>Hero Section & Featured Categories</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/homepage.png" width="420" alt="Homepage"/><br/><sub><b>Homepage — Hero & Deals</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/hero_section.png" width="420" alt="Hero Section"/><br/><sub><b>Hero Section & Featured Categories</b></sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="./docs/screenshots/category_nav.png" width="420" alt="Navigation Drawer"/><br/><sub><b>Mobile / Department Navigation Drawer</b></sub></td>
-    <td align="center"><img src="./docs/screenshots/product_listing.png" width="420" alt="Product Listing"/><br/><sub><b>Product Listing Page</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/category_nav.png" width="420" alt="Navigation Drawer"/><br/><sub><b>Mobile / Department Navigation Drawer</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/product_listing.png" width="420" alt="Product Listing"/><br/><sub><b>Product Listing Page</b></sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="./docs/screenshots/product_detail.png" width="420" alt="Product Detail"/><br/><sub><b>Product Detail Page</b></sub></td>
-    <td align="center"><img src="./docs/screenshots/cart.png" width="420" alt="Cart"/><br/><sub><b>Shopping Cart</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/product_detail.png" width="420" alt="Product Detail"/><br/><sub><b>Product Detail Page</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/cart.png" width="420" alt="Cart"/><br/><sub><b>Shopping Cart</b></sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="./docs/screenshots/checkout.png" width="420" alt="Checkout"/><br/><sub><b>Checkout Flow</b></sub></td>
-    <td align="center"><img src="./docs/screenshots/payment.png" width="420" alt="Payment"/><br/><sub><b>Payment Gateway (Razorpay)</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/checkout.png" width="420" alt="Checkout"/><br/><sub><b>Checkout Flow</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/payment.png" width="420" alt="Payment"/><br/><sub><b>Payment Gateway (Razorpay)</b></sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="./docs/screenshots/orders.png" width="420" alt="Orders"/><br/><sub><b>Order History</b></sub></td>
-    <td align="center"><img src="./docs/screenshots/account.png" width="420" alt="Account"/><br/><sub><b>Account Dashboard</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/orders.png" width="420" alt="Orders"/><br/><sub><b>Order History</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/account.png" width="420" alt="Account"/><br/><sub><b>Account Dashboard</b></sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="./docs/screenshots/auth_login.png" width="420" alt="Login"/><br/><sub><b>Sign In Page</b></sub></td>
-    <td align="center"><img src="./docs/screenshots/auth_register.png" width="420" alt="Register"/><br/><sub><b>Registration Page</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/auth_login.png" width="420" alt="Login"/><br/><sub><b>Sign In Page</b></sub></td>
+    <td align="center"><img src="./project-apex/docs/screenshots/auth_register.png" width="420" alt="Register"/><br/><sub><b>Registration Page</b></sub></td>
   </tr>
 </table>
 
@@ -236,35 +233,24 @@ npx prisma db push
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
 ## 🚢 Deploying to Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 1. Push your code to GitHub.
 2. Import the repository at [vercel.com/new](https://vercel.com/new).
 3. Set the **Root Directory** to `project-apex`.
 4. Add all environment variables from `.env.example` in the Vercel dashboard.
 5. Deploy — Vercel will run `prisma generate && next build` automatically.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 ---
 
-## Learn More
 ## 📜 Scripts
 
-To learn more about Next.js, take a look at the following resources:
 | Command | Description |
 |---|---|
 | `npm run dev` | Start local development server |
@@ -273,20 +259,14 @@ To learn more about Next.js, take a look at the following resources:
 | `npm run lint` | Run ESLint |
 | `npm run test:orders` | Run order flow integration test |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 ---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 ## 📄 License
 
-## Deploy on Vercel
 This project is for educational and portfolio purposes.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 ---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 <div align="center">
   Built with ❤️ by <strong>Harsh Shinde</strong>
 </div>
