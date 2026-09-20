@@ -1,26 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --apex-header: #131921;
+  --apex-header-light: #232f3e;
+  --apex-header-sub: #1a2433;
+  --apex-accent: #f08804;
+  --apex-accent-hover: #e47911;
+  --apex-yellow: #febd69;
+  --apex-yellow-light: #fef0c7;
+  --apex-blue: #007185;
+  --apex-blue-hover: #004b57;
+  --apex-bg: #e3e6e6;
+  --apex-card-bg: #ffffff;
+  --apex-text-main: #0f1111;
+  --apex-text-muted: #565959;
+  --apex-border: #d5d9d9;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--apex-bg);
+  color: var(--apex-text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  min-height: 100vh;
 }
