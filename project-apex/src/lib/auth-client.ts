@@ -55,6 +55,8 @@ export interface SessionState {
 
 /**
  * React hook observing Firebase Authentication state and server session synchronization.
+ * Uses localStorage as a fast cache so the session is available immediately on
+ * subsequent renders without waiting for a network round-trip.
  */
 export function useSession() {
   const [session, setSession] = useState<{ user: ApexUser } | null>(null);
@@ -63,20 +65,55 @@ export function useSession() {
   useEffect(() => {
     let isMounted = true;
 
-    // First check existing server session cookie
-    fetch('/api/auth/firebase-session')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (isMounted && data?.user) {
-          setSession({ user: data.user });
+    // ── 1. Fast path: restore cached session from localStorage ──
+    try {
+      const cached = localStorage.getItem('apex_session_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached) as { user: ApexUser; exp: number };
+        if (parsed?.user && parsed.exp > Date.now()) {
+          if (isMounted) {
+            setSession({ user: parsed.user });
+            setIsPending(false); // don't block UI — confirm in background
+          }
         }
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (isMounted) setIsPending(false);
-      });
+      }
+    } catch {}
 
-    // Listen to Firebase Auth state changes
+    // ── 2. Confirm with server (sets/refreshes cache) ──
+    const confirmSession = async () => {
+      try {
+        const res = await fetch('/api/auth/firebase-session', { credentials: 'include' });
+        if (!res.ok) {
+          if (isMounted) {
+            setSession(null);
+            setIsPending(false);
+            localStorage.removeItem('apex_session_cache');
+          }
+          return;
+        }
+        const data = await res.json().catch(() => null);
+        if (isMounted) {
+          if (data?.user) {
+            setSession({ user: data.user });
+            // Cache for 6 hours
+            localStorage.setItem('apex_session_cache', JSON.stringify({
+              user: data.user,
+              exp: Date.now() + 6 * 60 * 60 * 1000,
+            }));
+          } else {
+            setSession(null);
+            localStorage.removeItem('apex_session_cache');
+          }
+          setIsPending(false);
+        }
+      } catch {
+        if (isMounted) setIsPending(false);
+      }
+    };
+
+    confirmSession();
+
+    // ── 3. Firebase Auth state listener — updates session when Firebase fires ──
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (fbUser: FirebaseUser | null) => {
       if (fbUser) {
         try {
@@ -84,20 +121,28 @@ export function useSession() {
           const res = await fetch('/api/auth/firebase-session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ idToken }),
           });
           if (res.ok) {
             const data = await res.json().catch(() => null);
             if (isMounted && data?.user) {
               setSession({ user: data.user });
+              localStorage.setItem('apex_session_cache', JSON.stringify({
+                user: data.user,
+                exp: Date.now() + 6 * 60 * 60 * 1000,
+              }));
             }
           }
         } catch (err) {
           console.error('Error synchronizing Firebase user with backend:', err);
         }
       } else {
-        // When signed out of Firebase, check if session was already active
-        // Only clear if no server session
+        // Firebase signed out — clear everything
+        if (isMounted) {
+          setSession(null);
+          localStorage.removeItem('apex_session_cache');
+        }
       }
       if (isMounted) setIsPending(false);
     });
@@ -238,8 +283,10 @@ signUp.email = internalSignUp;
  */
 export async function signOut() {
   try {
+    // Clear localStorage cache first
+    try { localStorage.removeItem('apex_session_cache'); } catch {}
     await fbSignOut(firebaseAuth);
-    await fetch('/api/auth/firebase-session', { method: 'DELETE' });
+    await fetch('/api/auth/firebase-session', { method: 'DELETE', credentials: 'include' });
     await legacyAuthClient.signOut().catch(() => {});
   } catch (err) {
     console.error('Error during sign out:', err);
