@@ -20,6 +20,7 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   
   const totalItems = useCartStore((state) => state.getTotalItems());
+  const setIsDrawerOpen = useCartStore((state) => state.setIsDrawerOpen);
 
   useEffect(() => {
     setMounted(true);
@@ -107,9 +108,11 @@ export default function Header() {
           </Link>
 
           {/* Cart */}
-          <Link 
-            href="#cart" 
+          <button 
+            type="button"
+            onClick={() => setIsDrawerOpen(true)}
             className="flex items-center gap-1.5 p-1.5 border border-transparent hover:border-white rounded cursor-pointer transition-colors relative"
+            aria-label="Open Shopping Cart"
           >
             <div className="relative">
               <ShoppingCart className="w-7 h-7 text-white" />
@@ -120,7 +123,7 @@ export default function Header() {
             <span className="hidden sm:inline-block font-bold text-xs self-end mb-1">
               Cart
             </span>
-          </Link>
+          </button>
         </div>
       </div>
 

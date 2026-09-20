@@ -4,7 +4,9 @@ import { Product, CartItem } from '@/types/product';
 
 interface CartState {
   items: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
+  isDrawerOpen: boolean;
+  setIsDrawerOpen: (open: boolean) => void;
+  addToCart: (product: Product, quantity?: number, openDrawer?: boolean) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -16,19 +18,26 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
-      addToCart: (product, quantity = 1) => {
+      isDrawerOpen: false,
+      setIsDrawerOpen: (open) => set({ isDrawerOpen: open }),
+      addToCart: (product, quantity = 1, openDrawer = true) => {
         set((state) => {
           const existingItemIndex = state.items.findIndex(
             (item) => item.product.id === product.id
           );
 
+          let updatedItems;
           if (existingItemIndex > -1) {
-            const updatedItems = [...state.items];
+            updatedItems = [...state.items];
             updatedItems[existingItemIndex].quantity += quantity;
-            return { items: updatedItems };
           } else {
-            return { items: [...state.items, { product, quantity }] };
+            updatedItems = [...state.items, { product, quantity }];
           }
+
+          return { 
+            items: updatedItems,
+            isDrawerOpen: openDrawer ? true : state.isDrawerOpen
+          };
         });
       },
       removeFromCart: (productId) => {
@@ -60,6 +69,8 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'apex-cart-storage',
+      partialize: (state) => ({ items: state.items }), // only persist cart items, not drawer UI state
     }
   )
 );
+
