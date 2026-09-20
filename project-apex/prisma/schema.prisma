@@ -23,6 +23,9 @@ model User {
   addresses      Address[]
   securityEvents SecurityEvent[]
   orders         Order[]
+  reviews        Review[]
+  helpfulVotes   ReviewHelpfulVote[]
+  reviewReports  ReviewReport[]
 
   @@map("user")
 }
@@ -199,4 +202,62 @@ model IdempotencyRecord {
   @@index([userId])
   @@map("idempotency_record")
 }
+
+enum ReviewStatus {
+  PUBLISHED
+  PENDING
+  HIDDEN
+}
+
+model Review {
+  id               String       @id @default(cuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId        String
+  orderItemId      String?
+  rating           Int          // 1 through 5
+  title            String       @db.VarChar(120)
+  body             String       @db.VarChar(5000)
+  verifiedPurchase Boolean      @default(false)
+  status           ReviewStatus @default(PUBLISHED)
+  helpfulCount     Int          @default(0)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  helpfulVotes     ReviewHelpfulVote[]
+  reports          ReviewReport[]
+
+  @@unique([userId, productId])
+  @@index([productId, status, createdAt])
+  @@index([userId, createdAt])
+  @@map("review")
+}
+
+model ReviewHelpfulVote {
+  id        String   @id @default(cuid())
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([reviewId, userId])
+  @@map("review_helpful_vote")
+}
+
+model ReviewReport {
+  id        String   @id @default(cuid())
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason    String
+  details   String?
+  status    String   @default("PENDING") // PENDING, REVIEWED, DISMISSED
+  createdAt DateTime @default(now())
+
+  @@index([reviewId])
+  @@map("review_report")
+}
+
 
