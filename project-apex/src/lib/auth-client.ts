@@ -65,7 +65,7 @@ export function useSession() {
 
     // First check existing server session cookie
     fetch('/api/auth/firebase-session')
-      .then((res) => res.json())
+      .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (isMounted && data?.user) {
           setSession({ user: data.user });
@@ -86,9 +86,11 @@ export function useSession() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ idToken }),
           });
-          const data = await res.json();
-          if (isMounted && data?.user) {
-            setSession({ user: data.user });
+          if (res.ok) {
+            const data = await res.json().catch(() => null);
+            if (isMounted && data?.user) {
+              setSession({ user: data.user });
+            }
           }
         } catch (err) {
           console.error('Error synchronizing Firebase user with backend:', err);
@@ -137,7 +139,12 @@ async function internalSignIn(credentials: { email: string; password: string; ca
       body: JSON.stringify({ idToken }),
     });
 
-    const sessionData = await res.json();
+    if (!res.ok) {
+      console.warn('Firebase session endpoint returned status:', res.status);
+      return { data: { user: userCredential.user }, error: null };
+    }
+
+    const sessionData = await res.json().catch(() => ({ user: userCredential.user }));
     return { data: sessionData, error: null };
   } catch (err: any) {
     // If Firebase Email/Password provider is not yet enabled in Firebase Console, fallback seamlessly
@@ -187,7 +194,12 @@ async function internalSignUp(data: { email: string; password: string; name: str
       body: JSON.stringify({ idToken }),
     });
 
-    const sessionData = await res.json();
+    if (!res.ok) {
+      console.warn('Firebase session endpoint returned status:', res.status);
+      return { data: { user: userCredential.user }, error: null };
+    }
+
+    const sessionData = await res.json().catch(() => ({ user: userCredential.user }));
     return { data: sessionData, error: null };
   } catch (err: any) {
     // If Firebase Email/Password provider is not yet enabled in Firebase Console, fallback seamlessly
