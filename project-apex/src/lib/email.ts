@@ -113,6 +113,94 @@ export async function sendVerificationEmail(email: string, url: string) {
   });
 }
 
+export async function sendSecurityAlertEmail(to: string, userName: string, action: string) {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #111;">
+      <h2 style="color: #0f1111;">Project Apex Security Alert</h2>
+      <p>Hello ${userName},</p>
+      <p>This is a security confirmation that your account experienced the following action: <strong>${action}</strong>.</p>
+      <p>If you did not perform this action, please immediately reset your password and sign out of all active sessions.</p>
+      <hr style="border: none; border-top: 1px solid #e7e7e7; margin: 24px 0;" />
+      <p style="font-size: 12px; color: #565959;">Project Apex Team</p>
+    </div>
+  `;
+
+  return sendEmail({
+    to,
+    subject: `Security Alert: ${action}`,
+    html,
+  });
+}
+
+export async function sendOrderConfirmationEmail(
+  to: string,
+  userName: string,
+  orderNumber: string,
+  orderTotal: number,
+  estimatedDelivery: string,
+  items: { title: string; quantity: number; price: number }[]
+) {
+  const itemsHtml = items
+    .map(
+      (item) => `
+      <tr>
+        <td style="padding: 8px; border-bottom: 1px solid #eee;">${item.title}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
+        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">$${(item.price * item.quantity).toFixed(2)}</td>
+      </tr>
+    `
+    )
+    .join('');
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #111; border: 1px solid #e7e7e7; border-radius: 8px; overflow: hidden;">
+      <div style="background-color: #0f172a; padding: 20px; text-align: center;">
+        <h1 style="color: #f59e0b; margin: 0; font-size: 24px;">Project Apex</h1>
+      </div>
+      <div style="padding: 24px;">
+        <h2 style="color: #065f46; margin-top: 0;">Order Confirmed!</h2>
+        <p>Hello ${userName},</p>
+        <p>Thank you for shopping with Project Apex! We've received your order and our fulfillment team is preparing it for delivery.</p>
+        
+        <div style="background-color: #f8fafc; border-radius: 6px; padding: 16px; margin: 20px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Order Number:</strong> <span style="font-family: monospace; color: #0f172a;">${orderNumber}</span></p>
+          <p style="margin: 0 0 8px 0;"><strong>Estimated Delivery:</strong> <span style="color: #059669; font-weight: bold;">${estimatedDelivery}</span></p>
+          <p style="margin: 0;"><strong>Order Total:</strong> $${orderTotal.toFixed(2)}</p>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 14px;">
+          <thead>
+            <tr style="background-color: #f1f5f9; text-align: left;">
+              <th style="padding: 8px;">Item</th>
+              <th style="padding: 8px; text-align: center;">Qty</th>
+              <th style="padding: 8px; text-align: right;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+
+        <div style="text-align: center; margin-top: 30px;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/orders/confirmation/${orderNumber}" 
+             style="background-color: #f59e0b; color: #0f172a; padding: 12px 24px; border-radius: 6px; font-weight: bold; text-decoration: none; display: inline-block;">
+            View Your Order
+          </a>
+        </div>
+      </div>
+      <div style="background-color: #f8fafc; padding: 16px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0;">
+        <p style="margin: 0;">Project Apex E-Commerce Platform • Simulation Mode</p>
+      </div>
+    </div>
+  `;
+
+  return sendEmail({
+    to,
+    subject: `Order Confirmation - ${orderNumber}`,
+    html,
+  });
+}
+
 export async function sendPasswordResetEmail(email: string, url: string) {
   const html = `
     <!DOCTYPE html>
