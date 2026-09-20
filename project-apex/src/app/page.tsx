@@ -14,8 +14,10 @@ import {
 } from 'lucide-react';
 import { mockProducts } from '@/data/mockProducts';
 import ProductCard from '@/components/ProductCard';
+import { useSession, signOut } from '@/lib/auth-client';
 
 export default function Home() {
+  const { data: session } = useSession();
   const [heroIndex, setHeroIndex] = useState(0);
 
   const heroBanners = [
@@ -167,24 +169,72 @@ export default function Home() {
 
           {/* Card 4: Sign In / Account Quick Box */}
           <div className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-2">Sign in for the best experience</h2>
-              <p className="text-xs text-gray-600 mb-4 leading-relaxed">
-                Enjoy personalized recommendations, track orders in real time, and access Prime shipping perks.
-              </p>
-              <Link 
-                href="/login"
-                className="w-full block text-center bg-[#ffd814] hover:bg-[#f7ca00] text-[#0f1111] font-semibold py-2 rounded-full text-xs shadow-sm cursor-pointer mb-3"
-              >
-                Sign in securely
-              </Link>
-            </div>
-            <div className="border-t border-gray-100 pt-3">
-              <span className="text-xs text-gray-500">New customer? </span>
-              <Link href="/register" className="text-xs font-semibold text-[#007185] hover:text-[#c7511f] hover:underline">
-                Start here.
-              </Link>
-            </div>
+            {session?.user ? (
+              <>
+                <div>
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-[#f08804]/15 border border-[#f08804]/30 flex items-center justify-center text-[#f08804] font-bold text-base shrink-0">
+                      {session.user.name ? session.user.name.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <div className="overflow-hidden">
+                      <h2 className="text-sm font-bold text-gray-900 truncate">
+                        Hi, {session.user.name || 'Customer'}
+                      </h2>
+                      <p className="text-[11px] text-gray-500 truncate">{session.user.email}</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-4 leading-relaxed">
+                    Track your shipments, review recent orders, and manage your account security.
+                  </p>
+                  <div className="space-y-2 mb-3">
+                    <Link 
+                      href="/account/orders"
+                      className="w-full block text-center bg-[#ffd814] hover:bg-[#f7ca00] text-[#0f1111] font-semibold py-2 rounded-full text-xs shadow-sm cursor-pointer transition-colors"
+                    >
+                      Your Orders
+                    </Link>
+                    <Link 
+                      href="/account"
+                      className="w-full block text-center bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-1.5 rounded-full text-xs border border-gray-300 shadow-sm cursor-pointer transition-colors"
+                    >
+                      Manage Account
+                    </Link>
+                  </div>
+                </div>
+                <div className="border-t border-gray-100 pt-3 flex items-center justify-between text-xs">
+                  <Link href="/account/addresses" className="font-semibold text-[#007185] hover:text-[#c7511f] hover:underline">
+                    Your Addresses
+                  </Link>
+                  <button 
+                    onClick={() => signOut().then(() => window.location.reload())}
+                    className="text-gray-500 hover:text-red-600 hover:underline text-xs cursor-pointer"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900 mb-2">Sign in for the best experience</h2>
+                  <p className="text-xs text-gray-600 mb-4 leading-relaxed">
+                    Enjoy personalized recommendations, track orders in real time, and access Prime shipping perks.
+                  </p>
+                  <Link 
+                    href="/login"
+                    className="w-full block text-center bg-[#ffd814] hover:bg-[#f7ca00] text-[#0f1111] font-semibold py-2 rounded-full text-xs shadow-sm cursor-pointer mb-3"
+                  >
+                    Sign in securely
+                  </Link>
+                </div>
+                <div className="border-t border-gray-100 pt-3">
+                  <span className="text-xs text-gray-500">New customer? </span>
+                  <Link href="/register" className="text-xs font-semibold text-[#007185] hover:text-[#c7511f] hover:underline">
+                    Start here.
+                  </Link>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
