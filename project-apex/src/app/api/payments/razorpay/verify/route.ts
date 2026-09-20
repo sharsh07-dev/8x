@@ -112,22 +112,18 @@ export async function POST(request: NextRequest) {
     ]);
 
     // Send confirmation email asynchronously
-    sendOrderConfirmationEmail({
-      to: session.user.email,
-      orderNumber: confirmedOrder.orderNumber,
-      orderId: confirmedOrder.id,
-      customerName: session.user.name,
-      items: order.items.map((it) => ({
+    sendOrderConfirmationEmail(
+      session.user.email,
+      session.user.name,
+      confirmedOrder.orderNumber,
+      confirmedOrder.total,
+      confirmedOrder.estimatedDelivery,
+      order.items.map((it) => ({
         title: it.productTitle,
         quantity: it.quantity,
         price: it.unitPrice,
-      })),
-      total: confirmedOrder.total,
-      estimatedDelivery: confirmedOrder.estimatedDelivery,
-      shippingAddress: order.addressSnapshot
-        ? `${order.addressSnapshot.street}, ${order.addressSnapshot.city}, ${order.addressSnapshot.state} ${order.addressSnapshot.zipCode}`
-        : 'Default Shipping Address',
-    }).catch((emailErr) => console.error('Error sending confirmation email:', emailErr));
+      }))
+    ).catch((emailErr) => console.error('Error sending confirmation email:', emailErr));
 
     return NextResponse.json({
       success: true,

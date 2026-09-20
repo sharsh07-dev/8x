@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { calculateOrderPricing } from '@/lib/checkout/pricing';
-import { validateInventoryAvailability } from '@/lib/checkout/inventory';
+import { checkInventoryAvailability } from '@/lib/checkout/inventory';
 import { createRazorpayOrder, getRazorpayPublicKey, isRazorpayConfigured } from '@/lib/payments/razorpay';
 
 export async function POST(request: NextRequest) {
@@ -30,22 +30,30 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Inventory check
-    const inventoryCheck = await validateInventoryAvailability(items);
-    if (!inventoryCheck.available) {
+    const inventoryCheck = await checkInventoryAvailability(items);
+    if (!inventoryCheck.valid) {
       return NextResponse.json(
         {
-          error: 'Some items in your cart exceed available stock.',
-          conflicts: inventoryCheck.conflicts,
+          error: inventoryCheck.reason || 'Some items in your cart exceed available stock.',
         },
         { status: 409 }
       );
     }
 
     // 2. Server-authoritative calculation
-    const pricing = await calculateOrderPricing({
-      items,
-      deliveryOptionId: deliveryOptionId || 'free-standard',
-    });
+    const pricingResult = calculateOrderPricing(
+      items.map((it: any) => ({ productId: it.productId, quantity: it.quantity })),
+      deliveryOptionId || 'FREE_STANDARD'
+    );
+
+    if (!pricingResult.success) {
+      return NextResponse.json(
+        { error: pricingResult.error },
+        { status: 400 }
+      );
+    }
+
+    const pricing = pricingResult.pricing;
 
     // 3. Verify delivery address
     const address = addressId
@@ -67,13 +75,13 @@ export async function POST(request: NextRequest) {
         tax: pricing.tax,
         discount: pricing.discount,
         total: pricing.total,
-        deliveryMethod: deliveryOptionId || 'free-standard',
-        estimatedDelivery: '2 business days',
+        deliveryMethod: deliveryOptionId || 'FREE_STANDARD',
+        estimatedDelivery: pricing.deliveryOption?.estimatedDelivery || '2 business days',
         items: {
-          create: pricing.validatedItems.map((item) => ({
+          create: pricing.items.map((item) => ({
             productId: item.productId,
-            productTitle: item.title,
-            productImage: item.image,
+            productTitle: item.productTitle,
+            productImage: item.productImage,
             unitPrice: item.unitPrice,
             quantity: item.quantity,
             lineTotal: item.lineTotal,
