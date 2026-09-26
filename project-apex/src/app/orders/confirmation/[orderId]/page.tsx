@@ -235,17 +235,17 @@ export default function OrderConfirmationPage() {
               <div className="space-y-1 pl-6 text-gray-600">
                 <p className="flex justify-between">
                   <span>Items Subtotal:</span>
-                  <span className="font-medium text-gray-900">${order.subtotal.toFixed(2)}</span>
+                  <span className="font-medium text-gray-900">₹{order.subtotal.toFixed(2)}</span>
                 </p>
                 <p className="flex justify-between">
                   <span>Shipping:</span>
                   <span className={order.shipping === 0 ? 'text-emerald-700 font-bold' : 'text-gray-900 font-medium'}>
-                    {order.shipping === 0 ? 'FREE' : `$${order.shipping.toFixed(2)}`}
+                    {order.shipping === 0 ? 'FREE' : `₹${order.shipping.toFixed(2)}`}
                   </span>
                 </p>
                 <p className="flex justify-between font-bold text-gray-900 pt-1 border-t border-gray-200">
                   <span>Grand Total:</span>
-                  <span className="text-amber-700 font-extrabold">${order.total.toFixed(2)}</span>
+                  <span className="text-amber-700 font-extrabold">₹{order.total.toFixed(2)}</span>
                 </p>
               </div>
             </div>
@@ -279,12 +279,12 @@ export default function OrderConfirmationPage() {
                   </Link>
                   <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
                     <span>Quantity: <strong className="text-gray-800">{item.quantity}</strong></span>
-                    <span>Unit Price: <strong className="text-gray-800">${item.unitPrice.toFixed(2)}</strong></span>
+                    <span>Unit Price: <strong className="text-gray-800">₹{item.unitPrice.toFixed(2)}</strong></span>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
                   <span className="text-base font-bold text-gray-900">
-                    ${item.lineTotal.toFixed(2)}
+                    ₹{item.lineTotal.toFixed(2)}
                   </span>
                 </div>
               </div>

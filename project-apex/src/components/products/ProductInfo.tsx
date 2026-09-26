@@ -77,7 +77,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             </span>
           )}
           <div className="flex items-start text-gray-900">
-            <span className="text-sm font-semibold mt-1">$</span>
+            <span className="text-sm font-semibold mt-1">₹</span>
             <span className="text-3xl sm:text-4xl font-extrabold tracking-tight">
               {Math.floor(product.price)}
             </span>
@@ -89,7 +89,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
         {product.originalPrice && (
           <p className="text-xs text-gray-500">
-            Typical price: <span className="line-through">${product.originalPrice.toFixed(2)}</span>
+            Typical price: <span className="line-through">₹{product.originalPrice.toFixed(2)}</span>
           </p>
         )}
 

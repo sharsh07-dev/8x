@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Server-authoritative calculation
-    const pricingResult = calculateOrderPricing(
+    const pricingResult = await calculateOrderPricing(
       items.map((it: any) => ({ productId: it.productId, quantity: it.quantity })),
       deliveryOptionId || 'FREE_STANDARD'
     );

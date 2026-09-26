@@ -33,7 +33,7 @@ export function DeliveryOptions({
         {options.map((opt) => {
           const isSelected = selectedOptionId === opt.id;
           const isFree = opt.price === 0 || (opt.id === 'FREE_STANDARD' && subtotal >= 35);
-          const displayPrice = isFree ? 'FREE' : `$${opt.price.toFixed(2)}`;
+          const displayPrice = isFree ? 'FREE' : `₹${opt.price.toFixed(2)}`;
 
           return (
             <label

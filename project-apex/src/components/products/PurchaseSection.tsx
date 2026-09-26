@@ -29,7 +29,7 @@ export default function PurchaseSection({ product }: PurchaseSectionProps) {
 
   const handleAddToCart = () => {
     if (!isAvailable) return;
-    addToCart(product, quantity, true);
+    addToCart(product, quantity, false);
     setIsAdded(true);
     setTimeout(() => {
       setIsAdded(false);
@@ -46,13 +46,13 @@ export default function PurchaseSection({ product }: PurchaseSectionProps) {
     <div className="bg-white border border-gray-300 rounded-lg p-5 shadow-xs space-y-4 text-xs select-none sticky top-24">
       {/* Price in Buy Box */}
       <div className="flex items-baseline gap-1">
-        <span className="text-sm font-bold text-gray-900">$</span>
+        <span className="text-sm font-bold text-gray-900">₹</span>
         <span className="text-2xl font-black text-gray-900">
           {(product.price * (isAvailable ? quantity : 1)).toFixed(2)}
         </span>
         {quantity > 1 && isAvailable && (
           <span className="text-[11px] text-gray-500 ml-1">
-            (${product.price.toFixed(2)} each)
+            (₹{product.price.toFixed(2)} each)
           </span>
         )}
       </div>

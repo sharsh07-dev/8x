@@ -100,7 +100,7 @@ export async function POST(
       for (const item of order.items) {
         try {
           await tx.productInventory.update({
-            where: { productId: item.productId },
+            where: { productId: item.productId! },
             data: {
               stock: { increment: item.quantity },
             },

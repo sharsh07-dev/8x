@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from '@/lib/server-session';
 import { headers } from 'next/headers';
-import { mockProducts } from '@/data/mockProducts';
+import { getProductById } from '@/lib/catalog.service';
 
 /**
  * GET /api/account/reviews
@@ -40,16 +40,16 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Map each review with product title & image from mockProducts
-    const formatted = reviews.map((r) => {
-      const product = mockProducts.find((p) => p.id === r.productId);
+    // Map each review with product title & image from database
+    const formatted = await Promise.all(reviews.map(async (r) => {
+      const product = await getProductById(r.productId);
       return {
         ...r,
         productTitle: product?.title || 'Apex Product',
         productImage: product?.image || '/placeholder.png',
         productCategory: product?.category || 'General',
       };
-    });
+    }));
 
     return NextResponse.json({
       reviews: formatted,

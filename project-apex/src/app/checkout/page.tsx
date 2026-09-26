@@ -26,7 +26,7 @@ export default function CheckoutPage() {
   const [selectedDeliveryId, setSelectedDeliveryId] = useState<string>('FREE_STANDARD');
   
   // Payment states
-  const [paymentProvider, setPaymentProvider] = useState<PaymentProvider>('SIMULATED_CARD');
+  const [paymentProvider, setPaymentProvider] = useState<PaymentProvider>('RAZORPAY');
   const [cardName, setCardName] = useState('Alex Morgan (Test)');
   const [cardNumber, setCardNumber] = useState('•••• •••• •••• 4242');
   const [expiry, setExpiry] = useState('12/28');
@@ -182,39 +182,67 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
     setSubmitError('');
 
-    // Special handling for Razorpay Test / Live Mode (Cards, UPI, Netbanking)
-    if (paymentProvider === 'RAZORPAY' || paymentProvider === 'RAZORPAY_UPI') {
+    const EXPRESS_API = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
+
+    try {
+      let initRes;
       try {
-        const createRes = await fetch('/api/payments/razorpay/create-order', {
+        // Step 1: Initialize order via Express backend (locks inventory in Postgres)
+        initRes = await fetch(`${EXPRESS_API}/orders/init`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            items: items.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
-            deliveryOptionId: selectedDeliveryId,
+          credentials: 'include',
+          body: JSON.stringify({ 
             addressId: selectedAddress.id,
+            deliveryOptionId: selectedDeliveryId
           }),
         });
+      } catch (networkError) {
+        // Fallback to legacy Next.js API route if Express backend isn't reachable (Network Error)
+        return handlePlaceOrderLegacy();
+      }
 
-        const orderData = await createRes.json();
-        if (!createRes.ok) {
-          throw new Error(orderData.error || 'Failed to initiate Razorpay checkout');
+      if (!initRes.ok) {
+        // Fallback to legacy Next.js API route on 502/503/404
+        if (initRes.status === 502 || initRes.status === 503 || initRes.status === 404) {
+          return handlePlaceOrderLegacy();
+        }
+        const errData = await initRes.json().catch(() => ({}));
+        throw new Error(errData.error?.message || errData.message || 'Failed to initialize order');
+      }
+
+      const { data: { order: pendingOrder } } = await initRes.json();
+
+      // Step 2: Payment
+      if (paymentProvider === 'RAZORPAY' || paymentProvider === 'RAZORPAY_UPI') {
+        // Razorpay: Create Razorpay order linked to our pending order
+        const rzpCreateRes = await fetch(`${EXPRESS_API}/payments/razorpay/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ orderId: pendingOrder.id }),
+        });
+
+        const rzpData = await rzpCreateRes.json();
+        if (!rzpCreateRes.ok) {
+          throw new Error(rzpData.error?.message || 'Failed to initiate Razorpay checkout');
         }
 
-        // Check if Razorpay JS SDK is ready on the client window
-        if (typeof window !== 'undefined' && (window as any).Razorpay && !orderData.razorpayOrderId.startsWith('order_test_')) {
+        if (typeof window !== 'undefined' && (window as any).Razorpay) {
           const rzpOptions: any = {
-            key: orderData.keyId,
-            amount: orderData.amount,
-            currency: orderData.currency || 'INR',
+            key: rzpData.data.keyId,
+            amount: rzpData.data.amount,
+            currency: rzpData.data.currency || 'INR',
             name: 'Project Apex',
-            description: `Order ${orderData.orderNumber}`,
-            order_id: orderData.razorpayOrderId,
+            description: `Order ${rzpData.data.orderNumber}`,
+            order_id: rzpData.data.razorpayOrderId,
             handler: async function (response: any) {
-              const verifyRes = await fetch('/api/payments/razorpay/verify', {
+              const verifyRes = await fetch(`${EXPRESS_API}/payments/razorpay/verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
-                  orderId: orderData.orderId,
+                  orderId: pendingOrder.id,
                   razorpayOrderId: response.razorpay_order_id,
                   razorpayPaymentId: response.razorpay_payment_id,
                   razorpaySignature: response.razorpay_signature,
@@ -222,57 +250,20 @@ export default function CheckoutPage() {
               });
               const verifyData = await verifyRes.json();
               if (verifyRes.ok) {
-                clearCart();
-                router.push(`/orders/confirmation/${orderData.orderNumber}`);
+                await clearCart();
+                router.push(`/orders/confirmation/${pendingOrder.orderNumber}`);
               } else {
-                setSubmitError(verifyData.error || 'Razorpay payment verification failed');
+                setSubmitError(verifyData.error?.message || 'Payment verification failed');
                 setIsSubmitting(false);
               }
             },
             prefill: {
               name: session?.user?.name || '',
               email: session?.user?.email || '',
-              contact: orderData.customerPhone || selectedAddress?.phone || (session?.user as any)?.phoneNumber || '9876543210',
+              contact: selectedAddress?.phone || '9876543210',
               method: paymentProvider === 'RAZORPAY_UPI' ? 'upi' : undefined,
             },
             theme: { color: '#131921' },
-            config: {
-              display: {
-                blocks: {
-                  upi: {
-                    name: 'Pay using UPI Apps & QR',
-                    instruments: [
-                      {
-                        method: 'upi',
-                      },
-                    ],
-                  },
-                  cards: {
-                    name: 'Credit and Debit Cards',
-                    instruments: [
-                      {
-                        method: 'card',
-                      },
-                    ],
-                  },
-                  other: {
-                    name: 'Netbanking & Wallets',
-                    instruments: [
-                      {
-                        method: 'netbanking',
-                      },
-                      {
-                        method: 'wallet',
-                      },
-                    ],
-                  },
-                },
-                sequence: paymentProvider === 'RAZORPAY_UPI' ? ['block.upi', 'block.cards', 'block.other'] : ['block.cards', 'block.upi', 'block.other'],
-                preferences: {
-                  show_default_blocks: true,
-                },
-              },
-            },
             modal: {
               ondismiss: function () {
                 setIsSubmitting(false);
@@ -282,38 +273,59 @@ export default function CheckoutPage() {
           const rzp = new (window as any).Razorpay(rzpOptions);
           rzp.open();
         } else {
-          // Automated / sandbox verified test flow
-          const verifyRes = await fetch('/api/payments/razorpay/verify', {
+          // Sandbox/simulated flow
+          const verifyRes = await fetch(`${EXPRESS_API}/payments/razorpay/verify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
-              orderId: orderData.orderId,
-              razorpayOrderId: orderData.razorpayOrderId,
+              orderId: pendingOrder.id,
+              razorpayOrderId: rzpData.data.razorpayOrderId,
               razorpayPaymentId: `rzp_test_pay_${Date.now()}`,
               razorpaySignature: 'sig_test_simulated_success',
             }),
           });
-          const verifyData = await verifyRes.json();
           if (verifyRes.ok) {
-            clearCart();
-            router.push(`/orders/confirmation/${orderData.orderNumber}`);
+            await clearCart();
+            router.push(`/orders/confirmation/${pendingOrder.orderNumber}`);
           } else {
-            setSubmitError(verifyData.error || 'Payment verification failed');
-            setIsSubmitting(false);
+            const verifyData = await verifyRes.json();
+            throw new Error(verifyData.error?.message || 'Payment verification failed');
           }
         }
         return;
-      } catch (rzpErr: any) {
-        setSubmitError(rzpErr.message || 'Razorpay checkout error');
-        setIsSubmitting(false);
-        return;
       }
-    }
 
+      // Simulated card / COD / Apex Points
+      const payRes = await fetch(`${EXPRESS_API}/payments/simulate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          orderId: pendingOrder.id,
+          provider: paymentProvider,
+        }),
+      });
+
+      const payData = await payRes.json();
+      if (!payRes.ok) {
+        throw new Error(payData.error?.message || 'Payment failed');
+      }
+
+      await clearCart();
+      router.push(`/orders/confirmation/${pendingOrder.orderNumber}`);
+    } catch (err: any) {
+      setSubmitError(err.message || 'Something went wrong while placing your order.');
+      setIsSubmitting(false);
+    }
+  };
+
+  // Legacy fallback: uses Next.js API route (original flow, no inventory locking)
+  const completeLegacyOrder = async () => {
     try {
       const payload = {
         idempotencyKey,
-        addressId: selectedAddress.id,
+        addressId: selectedAddress!.id,
         deliveryOptionId: selectedDeliveryId,
         paymentProvider,
         promoCode: appliedPromo ? promoCode : undefined,
@@ -340,16 +352,46 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Failed to place your order. Please try again.');
       }
 
-      // Clear the local Zustand shopping cart
-      clearCart();
-
-      // Redirect to confirmation page
+      await clearCart();
       router.push(`/orders/confirmation/${data.order.orderNumber}`);
     } catch (err: any) {
       setSubmitError(err.message || 'Something went wrong while placing your order.');
       setIsSubmitting(false);
     }
   };
+
+  const handlePlaceOrderLegacy = async () => {
+    if ((paymentProvider === 'RAZORPAY' || paymentProvider === 'RAZORPAY_UPI') && typeof window !== 'undefined' && (window as any).Razorpay) {
+      // Mock Razorpay Modal for frontend-only fallback
+      const rzpOptions: any = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_1DP5mmOlF5G5ag', // Use real test key if available
+        amount: Math.round((pricing?.total || 0) * 100),
+        currency: 'INR',
+        name: 'PEHNO',
+        description: 'Order Payment',
+        prefill: {
+          name: session?.user?.name || '',
+          email: session?.user?.email || '',
+          contact: selectedAddress?.phone || '9876543210',
+        },
+        theme: { color: '#171717' },
+        handler: async function (response: any) {
+          // Success simulated
+          await completeLegacyOrder();
+        },
+        modal: {
+          ondismiss: function () {
+            setIsSubmitting(false);
+          },
+        },
+      };
+      const rzp = new (window as any).Razorpay(rzpOptions);
+      rzp.open();
+    } else {
+      await completeLegacyOrder();
+    }
+  };
+
 
   if (sessionLoading || loadingInitial) {
     return (
@@ -385,23 +427,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen py-8">
-      {/* Checkout Minimal Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-        <div className="flex items-center justify-between border-b pb-4">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-extrabold tracking-tight text-slate-900">
-              apex<span className="text-amber-500">.</span>
-            </span>
-          </Link>
-          <div className="flex items-center gap-2 text-slate-700 text-base font-semibold">
-            <Lock className="w-5 h-5 text-gray-500" />
-            <span>Checkout ({items.reduce((a, b) => a + b.quantity, 0)} {items.reduce((a, b) => a + b.quantity, 0) === 1 ? 'item' : 'items'})</span>
-          </div>
-          <Link href="/cart" className="text-xs text-cyan-700 hover:underline font-medium">
-            Return to Cart
-          </Link>
-        </div>
-      </div>
+      {/* Minimal header removed to avoid duplication with global Header */}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

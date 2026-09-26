@@ -1,6 +1,6 @@
 import React from 'react';
 import { getCollectionBySlug, COLLECTIONS } from '@/data/collections';
-import { mockProducts } from '@/data/mockProducts';
+import { getProductsByIds } from '@/lib/catalog.service';
 import ProductCard from '@/components/ProductCard';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { notFound } from 'next/navigation';
@@ -30,7 +30,7 @@ export default async function CollectionDetailPage({
 
   if (!collection) notFound();
 
-  const products = mockProducts.filter((p) => collection.productIds.includes(p.id));
+  const products = await getProductsByIds(collection.productIds);
 
   return (
     <div className="bg-gray-50 min-h-screen pb-16">

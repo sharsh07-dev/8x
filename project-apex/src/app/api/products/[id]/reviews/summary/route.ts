@@ -13,12 +13,9 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     const { id: productId } = await params;
 
     try {
-      const { prisma } = await import('@/lib/prisma');
+      const { mockReviews } = await import('@/data/mockReviews');
 
-      const reviews = await prisma.review.findMany({
-        where: { productId, status: 'PUBLISHED' },
-        select: { rating: true },
-      });
+      const reviews = mockReviews.filter((r) => r.productId === productId);
 
       const totalReviews = reviews.length;
 
@@ -45,8 +42,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
 
       return NextResponse.json({ averageRating, totalReviews, hasReviews: true, distribution });
     } catch (dbErr: any) {
-      console.warn('[reviews/summary GET] DB unavailable:', dbErr?.message);
-      // Return empty summary rather than 500
+      console.warn('[reviews/summary GET] mock data unavailable:', dbErr?.message);
       return NextResponse.json({
         averageRating: 0,
         totalReviews: 0,

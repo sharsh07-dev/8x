@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Authoritative pricing recalculation
-    const pricingResult = calculateOrderPricing(items, deliveryOptionId, promoCode);
+    const pricingResult = await calculateOrderPricing(items, deliveryOptionId, promoCode);
     if (!pricingResult.success) {
       return NextResponse.json({ error: pricingResult.error }, { status: 400 });
     }

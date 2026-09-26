@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSession } from '@/lib/auth-client';
 import { useCartStore } from '@/store/useCartStore';
-import { mockProducts } from '@/data/mockProducts';
+import { fetchProductAction } from '@/app/actions/catalog';
 import {
   ChevronRight,
   Package,
@@ -141,8 +141,8 @@ export default function OrderDetailPage() {
     }
   };
 
-  const handleBuyAgain = (item: OrderItem) => {
-    const prod = mockProducts.find((p) => p.id === item.productId);
+  const handleBuyAgain = async (item: OrderItem) => {
+    const prod = await fetchProductAction(item.productId);
     if (prod) {
       addToCart(prod, 1, true);
     } else {

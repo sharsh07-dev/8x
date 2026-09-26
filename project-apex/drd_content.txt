@@ -1,0 +1,1000 @@
+PEHNO
+AI-FIRST E-COMMERCE VIRTUAL TRY-ON DECISION UX
+UI/UX DESIGN REQUIREMENTS DOCUMENT
+Version 1.0 " Product design baseline " September 2026
+
+DESIGN NORTH STAR "Tell us what you need. We help you decide."
+
+
+
+Exploratory visual reference for the PEHNO direction. Use as inspiration for hierarchy and flows, not as a literal UI to clone.
+1. Document Control
+Field
+Requirement
+Product
+PEHNO — AI-first fashion / lifestyle e-commerce web platform
+Primary surfaces
+Responsive desktop web, tablet web, mobile web; architecture should permit native app later
+Primary differentiators
+AI need-based search, virtual try-on, outfit builder, decision mode, wardrobe-aware recommendations, transparent pricing, trust signals
+Primary market lens
+India-first; mobile-first; INR; PIN-code delivery context; Indian occasions and language expansion-ready
+Design status
+Baseline DRD for design exploration and implementation
+Version
+1.0
+Design language
+Warm editorial + modern commerce + restrained AI
+Accessibility target
+WCAG 2.2 AA as the product accessibility target
+
+2. Executive Summary
+PEHNO must not look or behave like a reskinned marketplace. The experience should feel like a modern Indian fashion-tech product whose core job is helping a customer move from uncertainty to confidence. The interface should be visual and aspirational during discovery, factual and comparison-oriented during evaluation, and calm and distraction-free during checkout.
+The design system therefore separates three customer mental modes: Explore, Decide, and Buy. Each mode has its own density, information hierarchy, and interaction priorities while remaining visually consistent.
+Buyer psychology is used here to reduce cognitive load, surface trustworthy evidence, preserve user control, and make important actions easy to find. It must not be used to create fake urgency, hidden charges, forced subscriptions, confirm-shaming, or other manipulative patterns.
+3. Product Design Principles
+Principle
+Rule
+UX implication
+Intent over inventory
+Start with what the customer is trying to accomplish, not with a wall of products.
+Hero search supports natural language, occasion and budget.
+Decision over distraction
+Every important element should answer a customer question.
+Use "Why this matches you", tradeoffs and evidence blocks.
+Visual first, evidence second
+Fashion is visual, but purchase confidence needs facts.
+Large imagery followed by fit, price, reviews, seller and delivery evidence.
+AI must explain itself
+Recommendations should expose useful reasons, not mysterious scores.
+Show compact reason chips and an optional "Why am I seeing this?" panel.
+Trust is a feature
+Price, returns, seller quality and review confidence should be easy to verify.
+Use consistent trust signals near decision points.
+One primary action per context
+Do not make every button fight for attention.
+Primary CTA = strongest next step; secondary actions are quieter.
+Progressive disclosure
+Show what matters first; reveal detail on demand.
+Accordion sections, "See all", expandable specs and review filters.
+Fast feedback
+Every click should have visible state feedback.
+Pressed states, loading states, optimistic cart updates, error recovery.
+Mobile is first-class
+Do not shrink desktop into mobile.
+Bottom navigation, sticky purchase bar, thumb-friendly controls.
+No deceptive persuasion
+Urgency and social proof must be truthful and contextual.
+No fake countdowns, fake scarcity, hidden recurring charges or dark patterns.
+
+4. Buyer Psychology Framework
+PEHNO should use established usability and decision-science ideas as design constraints rather than as persuasion tricks. The objective is to make a correct decision easier, not to pressure a customer into a purchase.
+Psychology / usability concept
+PEHNO design rule
+Example
+Cognitive load reduction
+Group related choices and avoid showing every option at once.
+Price, size, color and delivery are grouped; advanced filters sit behind "More filters".
+Hick-Hyman principle
+Reduce the number of equally prominent choices at a decision point.
+One primary CTA; 5–7 top navigation choices; related actions moved to menus.
+Fitts's law
+Important touch/click targets must be large and easy to reach.
+Primary CTAs >= 44 px touch height on mobile; generous spacing between destructive actions.
+Gestalt proximity / similarity
+Elements that belong together should look and sit together.
+Price + discount + final payable amount live in one pricing block.
+Von Restorff isolation
+A truly important action may be visually distinct.
+Try On uses the brand peach treatment; checkout uses one high-contrast primary CTA.
+Social proof
+Show authentic review evidence near the product decision.
+Rating, review count, verified-purchase signal and photo reviews.
+Uncertainty reduction
+Answer the customer's strongest unknown before checkout.
+Delivery date, returns, seller reliability, fit and price history are visible.
+Choice architecture
+Organize choices so the easiest path is clear without hiding alternatives.
+"Best match for you" can be highlighted while competitors remain visible and comparable.
+Loss aversion — used carefully
+Allow user-controlled price/stock alerts instead of pressure messaging.
+"Notify me if price drops below X" rather than fake urgency.
+
+Design policy: no psychological principle may override truthful information, user consent, accessibility, or the ability to reverse a choice.
+5. Brand Personality
+Dimension
+PEHNO should feel
+Avoid
+Indian
+Contemporary India, local occasions, warm language, globally understandable.
+Stereotypical "desi" decoration, overuse of motifs or cliché festival visuals.
+Premium
+Confident, calm, editorial.
+Luxury-forced language, excessive gold/black, visual noise.
+Friendly
+Helpful and conversational.
+Childish UI, excessive emojis, slang in critical flows.
+Smart
+AI is useful and explainable.
+"Magic AI" claims without evidence.
+Human
+Real people, real fit, real customer context.
+Unrealistic model perfection or impossible body/fit promises.
+
+6. Visual Design System
+6.1 Color philosophy
+PEHNO uses warm neutrals as the canvas, near-black for primary actions and typography, peach/coral as the brand warmth, purple as a reserved AI signal, and semantic status colors only when meaning is clear. Color must never be the sole carrier of meaning.
+171717
+Brand Ink
+#171717 — authority, readability, decisive primary actions
+Primary CTA, headings, navigation icons, purchase actions
+
+F9F6F1
+Warm Ivory
+#F9F6F1 — warmth and visual calm
+Page background, hero surfaces, editorial sections
+
+F6B7A3
+Peach
+#F6B7A3 — warmth, fashion, invitation
+Try-On CTA, soft highlights, selected fashion accents
+
+E67661
+Coral
+#E67661 — brand energy and attention
+Brand accents, key labels, section highlights
+
+6B4CE6
+AI Purple
+#6B4CE6 — intelligence / AI mode
+AI assistant, AI summary, AI search states only
+
+2F7D5A
+Success
+#2F7D5A — completed / safe / confirmed
+Successful payment, verified, available, delivered
+
+A66A00
+Warning
+#A66A00 — caution / needs attention
+Price change, low stock with verified inventory, pending action
+
+C2413A
+Error
+#C2413A — blocked / invalid / destructive
+Validation, failed payment, remove/delete confirmation
+
+2F6FED
+Info
+#2F6FED — neutral guidance
+Help tips, informational notices, delivery explanations
+
+C48A11
+Rating Gold
+#C48A11 — evaluation signal, not primary CTA
+Stars, rating labels, premium badge when justified
+
+6B7280
+Muted
+#6B7280 — secondary information
+Metadata, hints, non-primary supporting text
+
+E3E1DD
+Border
+#E3E1DD — structure without heaviness
+Cards, inputs, dividers
+
+6.2 Color usage rules
+Do not use coral, peach, green, red, purple, and gold simultaneously in one component. A component should have one dominant role color plus neutral support.
+Purple is reserved for AI-originated functionality so customers can quickly distinguish AI from standard commerce controls.
+Green means a positive state or verified/completed condition; never use green merely because it "converts well."
+Red is reserved for errors, destructive actions, or clearly negative status. Do not use red for ordinary discount labels.
+Gold is for ratings/quality signals and selected premium cues. It should not become the default "buy now" color.
+Every color-coded state must also include text or icon meaning for accessibility.
+6.3 Typography
+Token
+Family
+Size / line height
+Use
+Display / Hero
+DM Serif Display or approved editorial serif
+48/56 desktop; 36/44 mobile
+Hero titles, major editorial statements
+H1
+Inter / Aptos / approved sans
+32/40
+Page title
+H2
+Inter / Aptos / approved sans
+24/32
+Section title
+H3
+Inter / Aptos / approved sans
+18/26
+Card group title
+Body L
+Inter / Aptos
+16/24
+Descriptions, important supporting copy
+Body
+Inter / Aptos
+14/20
+Default UI copy
+Body S
+Inter / Aptos
+12/18
+Metadata, helper text
+Price XL
+Inter / Aptos
+28/32 semibold
+Primary product price
+Price
+Inter / Aptos
+18/24 semibold
+Card price
+Button
+Inter / Aptos
+14/20 semibold
+All CTAs
+
+Typography rule: use the serif only for editorial emphasis. Core shopping tasks remain sans-serif for speed, scanning and consistency.
+6.4 Spacing / grid / radii
+Token
+Value
+Use
+Spacing 1
+4 px
+Icon/text micro gaps
+Spacing 2
+8 px
+Control internal spacing, chips
+Spacing 3
+12 px
+Card internal spacing
+Spacing 4
+16 px
+Default component gap
+Spacing 5
+24 px
+Section and card group spacing
+Spacing 6
+32 px
+Major content separation
+Spacing 7
+48 px
+Hero / page section separation
+Spacing 8
+64 px
+Large desktop breathing room
+Desktop grid
+12 columns, max content width 1280 px
+Homepage, results, PDP
+Tablet grid
+8 columns
+Tablet layout
+Mobile grid
+4 columns / 16 px side padding
+Mobile web
+Radius S
+8 px
+Inputs, small controls
+Radius M
+12 px
+Cards, buttons, dropdowns
+Radius L
+16 px
+Hero cards / large modules
+Radius XL
+24 px
+Feature surfaces / image frames
+
+7. Component Requirements
+7.1 Buttons
+Type
+Default
+Hover
+Pressed
+Disabled
+Use
+Primary
+#171717 bg / white text
+#2A2A2A
+#000000
+#D1D5DB bg / #FFFFFF text
+Main next step: Add to Cart, Buy, Checkout
+Try-On
+#F6B7A3 bg / #171717 text
+#F1A18C
+#E99B85
+#E5E7EB / #6B7280
+Virtual try-on entry point
+AI
+#6B4CE6 bg / white text
+#5B3ED0
+ #4C33B8
+ #D9D1FF / #6B7280
+AI search, AI stylist, AI summary
+Secondary
+transparent / #171717 border
+#F7F7F6 bg
+#EFEDE9 bg
+transparent / #9CA3AF
+Compare, Save, Cancel
+Text
+none / #171717
+underline or subtle bg
+#EFEDE9
+#9CA3AF
+Low-priority actions
+Destructive
+transparent or #C2413A depending severity
+darker red tint
+darker red tint
+disabled gray
+Delete, remove, destructive confirmations
+
+Button rule: never style two competing actions as equally primary in the same visual context. Every page should have a dominant next step.
+7.2 Inputs and forms
+Element
+Height
+Default
+Focus
+Error
+Behavior
+Text input
+48 px
+White/ivory surface + 1 px border
+2 px visible focus ring in brand ink or info blue
+Border + helper text in error red
+Label stays visible; never rely on placeholder as label
+Search input
+52–56 px desktop; 48 px mobile
+Large radius / clean background
+Expanded suggestion panel
+Inline message only when input cannot be interpreted
+Supports text, voice and image entry
+Select
+48 px
+Neutral surface
+Visible focus ring
+Inline error
+Keyboard navigable; selection retained
+Checkbox
+24 px hit area
+Empty outline
+Brand ink checked
+Error only if required
+Use for independent options
+Radio
+24 px hit area
+Empty outline
+Brand ink selected
+Error only if required
+Use for one-of-many choices
+Switch
+44 px track
+Muted off
+Brand ink / semantic on
+Not normally used for validation
+Use only for persistent settings
+Chip
+32–36 px
+Neutral border
+Branded selected state
+N/A
+For filters, sizes, quick preferences
+
+Labels are persistent and visible. Placeholder text is supplemental, never the only field label.
+Validation appears after the user has supplied enough context; do not scream errors before interaction.
+Use inline recovery copy: "Enter a valid 6-digit PIN code" is better than "Invalid input."
+For checkout, preserve entered values after recoverable errors and never clear a whole form because one field failed.
+7.3 Cards, badges, chips and icons
+Component
+Requirement
+Product card
+Image-first, title, rating, price, delivery, one relevance reason, up to two actions
+Trust badge
+Short label + icon; must describe a verifiable condition
+AI reason chip
+Examples: "Matches your budget", "Similar to saved styles", "Fast delivery to your PIN"
+Filter chip
+Selected chip shows clear state and removable affordance
+Iconography
+Use one icon set; 20–24 px standard; 16 px compact; stroke weight consistent
+Image treatment
+Use high-quality product/model images; avoid excessive drop shadows and decorative frames
+
+7.4 Feedback states
+State
+Visual meaning
+Required UX
+Hover
+Discoverability
+Subtle background/shadow change; never change layout
+Focus
+Keyboard location
+2 px visible outline; do not remove browser-accessible focus
+Pressed
+Action occurred
+Small state shift / darker treatment
+Loading
+System is working
+Skeleton or spinner; preserve context; avoid blocking entire page when local loading is sufficient
+Success
+Action completed
+Green semantic cue + text confirmation + next step
+Warning
+Needs attention
+Amber cue + clear action
+Error
+Action failed / invalid
+Red semantic cue + recovery action
+Empty
+No data / no results
+Explain why + next best action; never a blank screen
+
+8. Information Architecture
+Primary navigation should communicate the product mental model. The structure below is intentionally different from a dense department-store header.
+Primary nav
+Purpose
+Desktop
+Mobile
+Shop
+Category and commerce browsing
+Top nav
+Bottom nav / menu
+Discover
+Collections, looks, creators, trends
+Top nav
+Bottom nav
+AI Stylist
+Natural-language assistance and recommendations
+Top nav
+Bottom nav primary feature
+Try-On
+Virtual fitting room
+Top nav
+Bottom nav primary feature
+Saved
+Wishlist, saved looks, price alerts
+Top nav
+Bottom nav
+Cart
+Cart and checkout
+Top-right sticky
+Bottom nav
+
+9. Screen-by-Screen UI/UX Requirements
+9.1 Homepage
+Goal: move customers from "I do not know what to search" to a useful path in under one interaction.
+Zone
+Design requirement
+Interaction
+Header
+Logo, search, location/PIN, account, saved, cart; no crowded category mega-nav by default
+Search expands on focus; account and cart open panels; PIN can be edited
+Hero
+Large editorial visual + headline "Find your perfect look" + natural-language search
+Search accepts product, budget, occasion and use case
+Quick intents
+College, Office, Wedding, Vacation, Festival, Date Night
+Click opens pre-filtered landing page
+Try-On module
+Visible early, not buried in footer
+Upload photo or choose saved photo
+For You
+Personalized products with a reason for each
+Horizontal card rail; "Why this?" opens explanation
+Collections
+Curated looks, seasonal stories, local occasions
+Open editorial collection
+Trust strip
+Returns, verified sellers, delivery expectations
+Hover/tap shows detail
+
+Homepage rule: no more than one dominant promotional hero. The page should not become a carousel of unrelated offers.
+9.2 Search / Results
+Requirement
+Specification
+Natural-language search
+Examples: "black shirt for college under 1500", "wedding outfit under 5000".
+AI understanding banner
+Parsed intent chips: Category, Occasion, Color, Budget, Style, Size. User can edit chips.
+Filters
+Price, size, color, brand, fit, rating, delivery, material, seller; advanced filters behind "More".
+Sort
+Relevance, New, Price Low-High, Price High-Low, Rating, Delivery.
+Product cards
+Show image, title, price, rating, delivery, relevance reason, Try On/Compare/Add.
+Zero results
+Offer relaxed constraints with explicit changes: "No exact matches. Try 1500– 2000?"
+Sponsored products
+Visually and textually labeled "Sponsored"; never disguise ad placement as organic relevance.
+
+9.3 Product Detail Page (PDP)
+Area
+Requirement
+Above fold
+Image gallery + title + rating + price + key benefit + color + size + Try On + Add to Cart + Buy
+Pricing
+Current price, MRP only when genuine, clear savings, final payable amount, optional offers
+Delivery
+PIN selector, expected delivery date, return window, COD/online availability when applicable
+Try-On
+Primary secondary action; opens dedicated fitting experience with consent and photo guidance
+Decision summary
+Good for / tradeoffs / key specs / review summary
+Reviews
+Rating breakdown, attribute sentiments, photo reviews, verified purchase signal, sorting/filtering
+Comparison
+Compare similar items without leaving the product context
+Seller
+Seller name, rating, fulfilled/verified state, return handling, response history where available
+Recommendations
+Only contextually relevant rows: similar, complete the look, alternatives, recently viewed
+
+9.4 Virtual Try-On
+Step
+Required UI
+Click / state behavior
+1. Explain
+Short instruction + privacy note + recommended photo type
+Continue opens uploader
+2. Upload
+Drag/drop, camera, file picker
+Validate file type/size; show thumbnail
+3. Photo check
+Pose/background quality check
+Offer "Use anyway" only when still safe; explain limitations
+4. Garment selection
+Current product + similar garments
+Changing garment does not require re-uploading person photo
+5. Generate
+Progress state with stages: Preparing Fitting Rendering
+Disable duplicate requests; allow cancel when technically possible
+6. Result
+Before/after, share, save, switch color, try another item
+"Add to Cart" preserves selected variant
+7. Failure
+Clear reason + retry/change photo
+Never blame user; retain selected garment
+
+Try-on disclaimer: the output is an AI visualization and is not a guarantee of exact fit, fabric behavior, color under every light, or final appearance. The disclaimer must sit near the generated result and not be buried in legal text.
+9.5 Outfit Builder
+Build a look as a set of coordinated products, not as a sequence of independent product pages.
+Interaction
+Behavior
+Slot cards
+Top, Bottom, Shoes, Accessories; each slot can be changed independently
+AI suggestion
+Suggest a missing item based on current look, budget and occasion
+Budget mode
+Show total outfit price and allow "under X" refinement
+Try full look
+Generate/compose a try-on preview of the complete outfit where technically supported
+Save look
+Save as a named look, e.g. "College Presentation"
+Add all
+Adds available items to cart; unavailable items remain listed with replacement suggestions
+
+9.6 Wardrobe
+Optional but strategic differentiator for fashion: the customer can upload items they already own and get recommendations that increase outfit combinations.
+Feature
+Requirement
+Wardrobe categories
+Tops, bottoms, shoes, outerwear, accessories
+Upload
+Photo with auto-crop/background removal if available
+Outfit generation
+Show combinations from owned items + PEHNO catalog items
+Gap analysis
+Explain what type of item would unlock more combinations; avoid body judgement
+Control
+Remove item, edit category, hide from recommendations, delete all wardrobe data
+
+9.7 Compare / Decision Mode
+Requirement
+Specification
+Selection
+2–4 products
+Columns
+Price, rating, material/specs, delivery, returns, seller, user-fit relevance
+Tradeoff summary
+Plain-language "Gains" and "Tradeoffs" for each product
+AI assistance
+Explain differences and surface questions the user may want to verify
+CTA
+Each column has a clear next action; no single product is labelled "best overall" by default
+
+9.8 Cart
+Requirement
+Specification
+Line item
+Image, title, variant, quantity, price, delivery
+Edit actions
+Change size/color/qty, remove, save for later
+Price summary
+Items + delivery + discounts + final total
+Recommendations
+At most one contextual module, e.g. "Complete your look"
+Checkout CTA
+Sticky on mobile; high-contrast primary button
+
+9.9 Checkout
+Step
+UI requirement
+Validation / feedback
+Address
+Saved addresses + add new + PIN validation
+Inline field validation; preserve values
+Delivery
+Available slots / promise
+Explicit date/time; flag changes before payment
+Payment
+UPI, card, wallet, COD where allowed
+Clear success/failure states; never double-charge
+Review
+Final line items + total + address + payment
+One final confirmation screen
+Place order
+One primary CTA with amount
+Loading state prevents duplicate submission
+
+Checkout design policy: no unrelated banners, forced upsells, hidden fees, preselected paid extras, or ambiguous cancellation actions.
+9.10 Order tracking
+State
+UI
+Confirmed
+Order number + payment status + estimated delivery
+Packed
+Progress timeline + seller/warehouse update where available
+Shipped
+Carrier and tracking information
+Out for delivery
+Prominent expected window + support action
+Delivered
+Proof/confirmation + review prompt + return entry point
+Return/refund
+Status timeline + expected resolution date
+
+10. Interaction Specifications
+Interaction
+Default
+Success
+Failure
+Notes
+Search submit
+Enter / tap arrow
+Results page
+No-results or parse-needed state
+Preserve query
+Wishlist
+Tap heart
+Filled heart + toast / count
+Retry state
+Accessible label updates
+Add to Cart
+Tap
+Cart count increments + non-blocking confirmation
+Error toast with retry
+Never duplicate line item unintentionally
+Try On
+Tap
+Uploader / existing photo selection
+Error if unsupported file
+Ask for consent once per session where policy permits
+Compare
+Tap compare
+Comparison tray opens
+Max 4 message
+Persist selected items while browsing
+Filter
+Select chip
+Results update + count
+Retry if network error
+Do not hide current filters
+Sort
+Select option
+Results reorder
+Keep previous sort
+Announce change accessibly
+Delete saved item
+Tap delete
+Undo toast
+Retry
+Use confirmation only when deletion is high-risk or irreversible
+Checkout submit
+Tap primary
+Loading then confirmation
+Inline recovery
+Prevent duplicate submit
+
+11. Microcopy Guidelines
+Situation
+Preferred
+Avoid
+Search prompt
+"Tell us what you're looking for…"
+"Search anything!!!"
+AI explanation
+"Matched your budget + occasion + saved style."
+"Our AI knows what you need."
+Price change
+"Price dropped 300 since you saved this."
+"BUY NOW BEFORE IT'S GONE!!!"
+Low stock
+"Only 3 left at this seller" when verified
+Fake countdowns / fake scarcity
+Error
+"Payment didn't go through. Try UPI again."
+"Something went wrong."
+No results
+"No exact matches. Relax one filter?"
+"No products found."
+Try-on disclaimer
+"AI preview — actual fit may vary."
+Claims of guaranteed fit
+Returns
+"7-day return available for this item."
+Small-print-only return disclosure
+
+12. Accessibility Requirements
+Target WCAG 2.2 AA for the experience. Use sufficient text/background contrast and do not rely on color alone to communicate state.
+All interactive controls must have visible keyboard focus states.
+Touch targets should be at least 44 px high on mobile for primary controls; adjacent controls need enough separation to prevent accidental taps.
+All meaningful images need useful alt text; decorative imagery must be marked decorative in implementation.
+Product cards must expose product name, price, rating and primary action to assistive technology in logical reading order.
+Form errors must be associated with their fields and communicated in text.
+Modal dialogs must trap focus, have a clear title, provide an accessible close action, and return focus to the trigger.
+Motion must be optional where it may create discomfort; avoid motion that blocks task completion.
+Do not use tiny low-contrast helper text for legally or financially important information.
+13. Responsive Requirements
+Breakpoint
+Primary behavior
+1440+
+12-column centered layout; broad editorial imagery; multi-card modules
+1200–1439
+Same 12-column logic with tighter spacing and fewer simultaneous cards
+1024–1199
+8-column grid; collapse secondary nav; maintain desktop search
+768–1023
+Tablet layout; stack decision modules; persistent cart/AI actions
+<768
+Mobile-first: 4-column grid, 16 px side padding, bottom nav, sticky purchase CTA
+
+Mobile rule: never simply scale down a desktop component. Recompose the experience around the thumb, one-handed scanning, short scroll depth, and persistent context.
+14. Motion and Animation
+Motion token
+Duration
+Use
+Micro
+120–160 ms
+Hover, pressed, chip changes
+Standard
+180–240 ms
+Drawer, dropdown, modal
+Emphasis
+280–400 ms
+Try-on result reveal, major page transition
+Progress
+Continuous / subtle
+AI generation state
+
+Use ease-out for entrance and ease-in for exit where appropriate.
+Never delay a critical action just to show animation.
+Skeletons should preserve layout; avoid pulsing every element at once.
+Respect reduced-motion preferences in implementation.
+15. Imagery and Content Requirements
+Content type
+Requirement
+Hero photography
+Lifestyle / editorial, emotionally aspirational but realistic
+Product photography
+Clean, high-resolution, consistent aspect ratios; front/angle/detail views where relevant
+Model photography
+Diverse, consented/licensed imagery; avoid implying exact user likeness or guaranteed results
+Customer photos
+Prominent but moderated; show real context, different heights/body shapes and lighting without grading bodies
+AI try-on
+Clearly marked as AI-generated visualization; never present generated anatomy/details as photographic truth
+
+16. AI UX Requirements
+AI feature
+Input
+Output
+Trust rule
+Need Search
+Natural language
+Parsed intent + ranked products
+Show interpreted filters and let user edit them
+AI Stylist
+Budget, occasion, preference
+Outfit/product suggestions
+Explain reasons and allow reset
+Review Summary
+Reviews
+Theme summary + evidence
+Link to source reviews; distinguish summary from original text
+Try-On
+Person image + garment
+Generated preview
+State limitations and user control over stored image
+Wardrobe
+Owned item images
+Outfit combinations
+No body judgement; explain recommendation logic
+Decision Mode
+2–4 products
+Tradeoff explanation
+Do not fabricate missing specs; say when data is unavailable
+
+17. Trust, Safety and Privacy UX
+Personal images used for try-on must have an explicit storage/processing explanation and a clear delete control.
+Avoid retaining user photos longer than the product needs. Backend retention must match the privacy policy.
+Seller and product trust signals must be backed by real data; do not invent verification badges.
+Sponsored placements must be unmistakably labelled and visually distinguishable from organic results.
+Price, discount and delivery claims must use verified source data and timestamps where appropriate.
+Returns, cancellations and refunds must be discoverable before purchase and during the order lifecycle.
+18. Design Tokens for Engineering
+Token family
+Examples
+Color
+color.brand.ink, color.brand.peach, color.brand.coral, color.ai, color.success, color.warning, color.error, color.info, color.rating, color.border
+Typography
+font.display, font.h1, font.h2, font.body, font.body-sm, font.price
+Spacing
+space.1=4, space.2=8, space.3=12, space.4=16, space.5=24, space.6=32, space.7=48, space.8=64
+Radius
+radius.sm=8, radius.md=12, radius.lg=16, radius.xl=24, radius.pill=999
+Shadow
+shadow.1=subtle card, shadow.2=popover, shadow.3=modal
+Motion
+motion.fast=140ms, motion.standard=220ms, motion.emphasis=320ms
+Z-index
+base 0, sticky 20, dropdown 40, modal 60, toast 80
+
+19. Figma / Design File Structure
+Page
+Contents
+00_Cover
+Brand, design principles, project summary
+01_Foundations
+Color, typography, spacing, grids, accessibility
+02_Components
+Buttons, forms, cards, chips, nav, modals, toasts
+03_Patterns
+Search, filters, product cards, pricing, trust blocks
+04_Web_Desktop
+Homepage, results, PDP, compare, cart, checkout
+05_Web_Mobile
+Mobile equivalents
+06_AI_Flows
+AI search, stylist, review summary, decision mode
+07_Virtual_TryOn
+Upload, generation, result, errors
+08_Wardrobe
+Wardrobe and outfit builder
+09_Prototypes
+Clickable high-fidelity flows
+10_Handoff
+Annotated specs, edge cases, redlines, assets
+
+20. Component Naming Convention
+Pattern
+Example
+Component
+Button / ProductCard / SearchField
+Variant
+Button / Primary / Default
+State
+Button / Primary / Hover
+Pattern
+Pattern / ProductDecisionCard / Default
+Flow
+Flow / TryOn / Upload
+Page
+Page / PDP / Desktop
+
+21. UX Analytics Requirements
+Instrument the experience around decision quality and friction, not only revenue.
+Event
+Required properties
+search_submitted
+query, parsed_intent, source, result_count
+product_viewed
+product_id, position, source, intent_match
+tryon_started
+product_id, photo_source, category
+tryon_completed
+duration, success, garment_id
+compare_started
+product_ids
+wishlist_added
+product_id, source
+add_to_cart
+product_id, variant, price, source
+checkout_started
+cart_value, item_count
+payment_failed
+method, error_category
+order_placed
+order_value, item_count, source
+review_submitted
+product_id, rating, verified_purchase
+
+22. A/B Testing Guardrails
+Test one meaningful UX hypothesis at a time when possible.
+Measure funnel health and user trust metrics together; a higher click-through rate is not automatically a better experience.
+Do not optimize by hiding important fees, obscuring cancellations, or using misleading urgency.
+Document hypothesis, audience, success metrics, guardrails, and stop criteria before launch.
+For AI features, monitor recommendation quality, correction rate, user override rate and reported errors in addition to conversion.
+23. QA Acceptance Criteria
+Area
+Pass condition
+Visual
+No clipping, overlap, inconsistent spacing, broken imagery or off-grid modules
+Responsive
+All core flows function at desktop/tablet/mobile breakpoints
+Interaction
+Every interactive state is designed: default, hover, focus, pressed, disabled, loading, success, error, empty
+Forms
+Labels, validation, recovery, keyboard order and persisted values are correct
+Checkout
+No duplicate submission; final price remains visible and correct
+AI
+AI-originated content is labelled and explainable; errors are recoverable
+Try-On
+Upload, generation, failure, retry, save and delete paths are all defined
+Accessibility
+Keyboard, focus, screen-reader semantics, contrast and reduced motion are tested
+Trust
+Sponsored, price, seller, review and delivery claims are clearly distinguished and backed by data
+
+24. Launch Scope Priorities
+Priority
+Features
+P0 — Must have
+Homepage, search, category, PDP, cart, checkout, account, order tracking, responsive foundation, core design system
+P1 — Differentiation
+AI need search, virtual try-on, compare / decision mode, transparent pricing, trust blocks
+P2 — Retention
+Wardrobe, outfit builder, saved looks, price alerts, richer personalization
+P3 — Expansion
+Creator/live commerce, deeper social discovery, multilingual voice shopping, native apps
+
+25. Anti-Patterns — Explicitly Prohibited
+Fake countdown timers or fake scarcity.
+Preselected paid extras or hidden subscription renewal.
+Confusing "Accept" / "Decline" hierarchy designed to force a choice.
+Hidden delivery fees revealed only after payment is initiated.
+Reviews or ratings presented without clear authenticity context.
+AI claims that imply guaranteed fit, guaranteed body transformation, or certainty when evidence is incomplete.
+Infinite recommendation carousels with no task relevance.
+Using multiple bright accent colors for competing CTAs.
+Clearing form data after validation errors.
+Designing only desktop first and "making it responsive" at the end.
+26. Final Design Checklist for Every Screen
+What is the user trying to accomplish on this screen?
+What is the single primary action?
+Can the customer understand the next step without reading everything?
+What uncertainty is the screen removing: price, fit, quality, delivery, seller, return, or choice?
+Which elements are AI-generated and are they clearly labelled?
+Are important facts grouped using proximity and hierarchy?
+Does every interactive control have default, hover, focus, pressed, loading, disabled and error states where applicable?
+Can the task be completed with keyboard and assistive technology?
+Does the screen remain clear at mobile width?
+Does any part of the UI use urgency, scarcity, or social proof in a way that could mislead the customer?
+27. References and Design Basis
+The following references are recommended for designers and engineers implementing this DRD. They provide foundational guidance; the DRD is the product-specific interpretation.
+Nielsen Norman Group — 10 Usability Heuristics for User Interface Design
+W3C — Web Content Accessibility Guidelines (WCAG) 2.2
+W3C — Understanding WCAG 2.2
+ISO 9241-210 — Human-centred design for interactive systems (reference overview)
+28. Handoff Summary
+PEHNO = DISCOVER TRY COMPARE DECIDE BUY
+
+This DRD is the baseline for all future PEHNO UI/UX work. New features should fit the same mental model: help the customer discover the right option, see it in context, understand the tradeoffs, trust the transaction, and complete the purchase with minimal friction.
+The visual direction should remain warm, editorial, Indian-rooted and technologically modern. The design should feel clearly different from traditional marketplace interfaces even when it uses familiar commerce patterns underneath.
+PEHNO / UI-UX DESIGN REQUIREMENTS DOCUMENT
+PEHNO v1.0 
+

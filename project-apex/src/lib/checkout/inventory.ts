@@ -1,10 +1,9 @@
-import { mockProducts } from '@/data/mockProducts';
+import { getProductById } from '../catalog.service';
 
 /**
  * Verifies stock availability for a list of cart items.
  * 
- * First tries the database for real-time inventory.
- * Falls back to mockProducts stock values if DB is unavailable.
+ * Uses the database for real-time inventory via catalog service.
  * Never throws — always returns a valid result.
  */
 export async function checkInventoryAvailability(
@@ -15,21 +14,13 @@ export async function checkInventoryAvailability(
       return { valid: false, reason: `Invalid quantity for product ${item.productId}` };
     }
 
-    // Try live DB inventory first
     try {
       const { prisma } = await import('@/lib/prisma');
+      const product = await getProductById(item.productId);
 
-      // Seed inventory record if missing (non-fatal)
-      const mock = mockProducts.find((p) => p.id === item.productId);
-      await prisma.productInventory.upsert({
-        where: { productId: item.productId },
-        update: {},
-        create: {
-          productId: item.productId,
-          stock: mock?.stock ?? 25,
-          reserved: 0,
-        },
-      }).catch(() => {});
+      if (!product) {
+        return { valid: false, reason: `Product ${item.productId} is not available` };
+      }
 
       const inventory = await prisma.productInventory.findUnique({
         where: { productId: item.productId },
@@ -37,30 +28,24 @@ export async function checkInventoryAvailability(
 
       if (inventory) {
         if (inventory.stock < item.quantity) {
-          const title = mock?.title ?? item.productId;
           return {
             valid: false,
-            reason: `Only ${inventory.stock} items left in stock for "${title}"`,
+            reason: `Only ${inventory.stock} items left in stock for "${product.title}"`,
             item: { productId: item.productId, available: inventory.stock },
           };
         }
-        continue; // DB check passed, move to next item
+      } else {
+        // Fallback check against product map if inventory record is missing
+        if ((product.stock ?? 99) < item.quantity) {
+          return {
+            valid: false,
+            reason: `Only ${product.stock} items left in stock for "${product.title}"`,
+            item: { productId: item.productId, available: product.stock ?? 0 },
+          };
+        }
       }
     } catch {
-      // DB unavailable — fall through to mock check
-    }
-
-    // Fallback: use mockProducts stock data
-    const mock = mockProducts.find((p) => p.id === item.productId);
-    if (!mock || !mock.inStock) {
-      return { valid: false, reason: `Product ${item.productId} is not available` };
-    }
-    if ((mock.stock ?? 99) < item.quantity) {
-      return {
-        valid: false,
-        reason: `Only ${mock.stock} items left in stock for "${mock.title}"`,
-        item: { productId: item.productId, available: mock.stock ?? 0 },
-      };
+      return { valid: false, reason: `Failed to check inventory for ${item.productId}` };
     }
   }
 

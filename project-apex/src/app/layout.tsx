@@ -1,30 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-jakarta",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Project Apex: Online Shopping for Electronics, Apparel, Computers & More",
-  description: "Low prices on top electronics, audio gear, smart watches, lifestyle items with fast, free delivery.",
+  title: "PEHNO — Discover · Try · Decide · Buy",
+  description: "India's AI-first fashion & lifestyle platform. Find your perfect look with virtual try-on, outfit building, and decision-mode comparison.",
   icons: {
     icon: [
-      { url: "/icon.jpg", type: "image/jpeg" },
-      { url: "/favicon.jpg", type: "image/jpeg" },
+      { url: "/icon.svg", type: "image/svg+xml" },
     ],
-    shortcut: "/favicon.jpg",
-    apple: "/icon.jpg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
   },
 };
 
@@ -36,9 +31,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${jakarta.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#e3e6e6] text-[#0f1111]">
+      <body className="min-h-full flex flex-col bg-[#F9F6F1] text-[#171717]" style={{ fontFamily: 'var(--font-jakarta), sans-serif' }}>
         <Header />
         <CartDrawer />
         <main className="flex-1">
@@ -49,4 +44,3 @@ export default function RootLayout({
     </html>
   );
 }
-

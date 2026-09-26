@@ -22,45 +22,25 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     const skip = (page - 1) * limit;
 
     try {
-      const { prisma } = await import('@/lib/prisma');
+      const { mockReviews } = await import('@/data/mockReviews');
+      let reviews = mockReviews.filter((r) => r.productId === productId);
 
-      const where: any = { productId, status: 'PUBLISHED' };
       if (star) {
         const starNum = parseInt(star, 10);
-        if (starNum >= 1 && starNum <= 5) where.rating = starNum;
+        if (starNum >= 1 && starNum <= 5) reviews = reviews.filter((r) => r.rating === starNum);
       }
-      if (verifiedOnly) where.verifiedPurchase = true;
+      if (verifiedOnly) reviews = reviews.filter((r) => r.verifiedPurchase);
 
-      let orderBy: any = [{ helpfulCount: 'desc' }, { createdAt: 'desc' }];
-      if (sort === 'recent') orderBy = [{ createdAt: 'desc' }];
-      else if (sort === 'highest') orderBy = [{ rating: 'desc' }, { createdAt: 'desc' }];
-      else if (sort === 'lowest') orderBy = [{ rating: 'asc' }, { createdAt: 'desc' }];
+      if (sort === 'recent') reviews.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      else if (sort === 'highest') reviews.sort((a, b) => b.rating - a.rating || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      else if (sort === 'lowest') reviews.sort((a, b) => a.rating - b.rating || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      else reviews.sort((a, b) => b.helpfulCount - a.helpfulCount || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-      const [reviews, totalCount] = await Promise.all([
-        prisma.review.findMany({
-          where,
-          orderBy,
-          skip,
-          take: limit,
-          select: {
-            id: true,
-            userId: true,
-            productId: true,
-            rating: true,
-            title: true,
-            body: true,
-            verifiedPurchase: true,
-            helpfulCount: true,
-            createdAt: true,
-            updatedAt: true,
-            user: { select: { id: true, name: true, image: true } },
-          },
-        }),
-        prisma.review.count({ where }),
-      ]);
+      const totalCount = reviews.length;
+      const paginatedReviews = reviews.slice(skip, skip + limit);
 
-      const formattedReviews = reviews.map((r) => {
-        const parts = (r.user?.name || 'Apex Customer').split(' ');
+      const formattedReviews = paginatedReviews.map((r) => {
+        const parts = (r.userName || 'Apex Customer').split(' ');
         const displayName = parts.length > 1 ? `${parts[0]} ${parts[1][0]}.` : parts[0];
         return {
           id: r.id,
@@ -71,8 +51,8 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
           verifiedPurchase: r.verifiedPurchase,
           helpfulCount: r.helpfulCount,
           createdAt: r.createdAt,
-          updatedAt: r.updatedAt,
-          reviewer: { id: r.user.id, name: displayName, image: r.user.image },
+          updatedAt: r.createdAt,
+          reviewer: { id: `user-${r.userName}`, name: displayName, image: null },
         };
       });
 
@@ -84,7 +64,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
         totalPages: Math.ceil(totalCount / limit) || 1,
       });
     } catch (dbErr: any) {
-      console.warn('[reviews GET] DB unavailable:', dbErr?.message);
+      console.warn('[reviews GET] mock data unavailable:', dbErr?.message);
       return NextResponse.json({ reviews: [], totalCount: 0, page, limit, totalPages: 1 });
     }
   } catch (error: any) {

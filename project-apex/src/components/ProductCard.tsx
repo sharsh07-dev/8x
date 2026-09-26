@@ -2,15 +2,17 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Star, Check, ShoppingCart, AlertCircle } from 'lucide-react';
+import { Star, Check, ShoppingBag, AlertCircle, Sparkles } from 'lucide-react';
 import { Product } from '@/types/product';
 import { useCartStore } from '@/store/useCartStore';
 
 interface ProductCardProps {
   product: Product;
+  showAiReason?: boolean;
+  aiReason?: string;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, showAiReason, aiReason }: ProductCardProps) {
   const [isAdded, setIsAdded] = useState(false);
   const addToCart = useCartStore((state) => state.addToCart);
 
@@ -18,163 +20,147 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!isAvailable) return;
-    
-    addToCart(product, 1, true);
+
+    addToCart(product, 1, false);
     setIsAdded(true);
-    setTimeout(() => {
-      setIsAdded(false);
-    }, 1800);
+    setTimeout(() => setIsAdded(false), 2000);
   };
 
-  const discountPercent = product.originalPrice 
+  const discountPct = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
+  const ratingFull  = Math.floor(product.rating);
+  const ratingHalf  = product.rating % 1 >= 0.5;
+
   return (
-    <div className="bg-white rounded-lg p-4 flex flex-col justify-between border border-gray-200 hover:shadow-xl transition-all duration-200 relative group">
-      {/* Badge */}
-      {product.badge && (
-        <div className="absolute top-2 left-2 z-10">
-          <span className={`text-[10px] font-bold px-2 py-0.5 rounded shadow-sm ${
-            product.badge.includes('Deal') 
-              ? 'bg-[#cc0c39] text-white' 
-              : product.badge.includes('Best')
-              ? 'bg-[#e67a00] text-white'
-              : 'bg-[#232f3e] text-white'
-          }`}>
+    <article className="group bg-white rounded-xl border border-[#E3E1DD] overflow-hidden flex flex-col h-full w-full transition-shadow duration-220 hover:shadow-[0_4px_20px_-4px_rgba(23,23,23,0.12)]">
+      {/* Image zone */}
+      <Link
+        href={`/products/${product.id}`}
+        className="block relative bg-[#F9F6F1] overflow-hidden"
+        style={{ aspectRatio: '4/3' }}
+        aria-label={product.title}
+      >
+        <img
+          src={product.image}
+          alt={product.title}
+          className="w-full h-full object-contain mix-blend-multiply p-4 transition-transform duration-320 group-hover:scale-105"
+          loading="lazy"
+        />
+
+        {/* Badge */}
+        {product.badge && (
+          <span className="absolute top-3 left-3 bg-[#E67661] text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-sm">
             {product.badge}
           </span>
-        </div>
-      )}
+        )}
 
-      <div>
-        {/* Product Image Link */}
-        <Link 
-          href={`/products/${product.id}`}
-          className="relative w-full h-48 sm:h-52 bg-gray-50 rounded-md overflow-hidden flex items-center justify-center mb-3 block"
-        >
-          <img 
-            src={product.image} 
-            alt={product.title}
-            className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300 p-2"
-            loading="lazy"
-          />
-        </Link>
-
-        {/* Category */}
-        <span className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">
-          {product.category}
-        </span>
-
-        {/* Title Link */}
-        <Link 
-          href={`/products/${product.id}`}
-          className="text-sm font-medium text-gray-900 line-clamp-2 mt-1 hover:text-[#007185] cursor-pointer transition-colors block leading-snug" 
-          title={product.title}
-        >
-          {product.title}
-        </Link>
-
-        {/* Rating & Reviews */}
-        <div className="flex items-center gap-1.5 mt-1.5">
-          <div className="flex items-center text-[#ffa41c]">
-            {[...Array(5)].map((_, i) => (
-              <Star 
-                key={i} 
-                className={`w-3.5 h-3.5 ${
-                  i < Math.floor(product.rating) 
-                    ? 'fill-[#ffa41c] text-[#ffa41c]' 
-                    : 'text-gray-300'
-                }`} 
-              />
-            ))}
-          </div>
-          <span className="text-xs text-[#007185] hover:underline cursor-pointer">
-            {product.reviewCount.toLocaleString()}
+        {/* Discount pill */}
+        {discountPct > 0 && (
+          <span className="absolute top-3 right-3 bg-white border border-[#E3E1DD] text-[#2F7D5A] text-[10px] font-bold px-2 py-0.5 rounded-sm">
+            {discountPct}% OFF
           </span>
-        </div>
+        )}
+      </Link>
 
-        {/* Pricing */}
-        <div className="mt-2.5 flex items-baseline gap-2">
-          {discountPercent > 0 && (
-            <span className="text-red-700 font-normal text-sm">
-              -{discountPercent}%
-            </span>
-          )}
-          <div className="flex items-start text-gray-900">
-            <span className="text-xs font-semibold mt-0.5">$</span>
-            <span className="text-2xl font-bold tracking-tight">
-              {Math.floor(product.price)}
-            </span>
-            <span className="text-xs font-semibold mt-0.5">
-              {(product.price % 1).toFixed(2).substring(2)}
+      {/* Content */}
+      <div className="flex flex-col flex-1 p-4">
+        
+        {/* Top Content */}
+        <div className="flex flex-col gap-2">
+          {/* Category */}
+          <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#6B7280]">
+            {product.category}
+          </p>
+
+          {/* Title */}
+          <Link
+            href={`/products/${product.id}`}
+            className="text-sm font-semibold text-[#171717] line-clamp-2 leading-snug hover:text-[#E67661] transition-colors"
+          >
+            {product.title}
+          </Link>
+
+          {/* Rating */}
+          <div className="flex items-center gap-1.5" aria-label={`Rating: ${product.rating} out of 5`}>
+            <div className="flex items-center gap-0.5 text-[#C48A11]">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-3 h-3 ${
+                    i < ratingFull
+                      ? 'fill-[#C48A11] text-[#C48A11]'
+                      : 'fill-transparent text-[#E3E1DD]'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-[11px] text-[#6B7280]">
+              ({(product.reviewCount || 0).toLocaleString()})
             </span>
           </div>
 
-          {product.originalPrice && (
-            <span className="text-xs text-gray-500 line-through">
-              Typical: ${product.originalPrice.toFixed(2)}
-            </span>
+          {/* AI reason chip */}
+          {showAiReason && aiReason && (
+            <div className="chip-ai text-[10px] mt-1">
+              <Sparkles className="w-3 h-3" />
+              {aiReason}
+            </div>
           )}
         </div>
 
-        {/* Stock & Delivery Info */}
-        <div className="mt-1.5 space-y-0.5 text-xs">
-          {isAvailable ? (
-            <>
-              {product.stock <= 5 && (
-                <p className="text-red-700 font-semibold text-[11px]">
-                  Only {product.stock} left in stock - order soon
-                </p>
-              )}
-              {product.isPrime && (
-                <div className="flex items-center gap-1">
-                  <span className="font-extrabold italic text-[#00a8e1] text-xs">prime</span>
-                  <span className="text-gray-600 font-normal text-[11px]">One-Day</span>
-                </div>
-              )}
-              <p className="text-gray-600 text-[11px]">
-                FREE delivery <span className="font-bold text-gray-900">Tomorrow</span>
-              </p>
-            </>
-          ) : (
-            <p className="text-red-700 font-medium text-xs flex items-center gap-1 pt-1">
-              <AlertCircle className="w-3.5 h-3.5" />
-              Currently unavailable
+        {/* Bottom Content (Pricing & CTA) pushed to bottom */}
+        <div className="flex flex-col gap-3 mt-auto pt-4">
+          {/* Pricing */}
+          <div className="flex items-baseline gap-2">
+            <span className="text-xl font-bold text-[#171717] tracking-tight">
+              ₹{Math.floor(product.price).toLocaleString()}
+            </span>
+            {product.originalPrice && (
+              <span className="text-xs text-[#6B7280] line-through">
+                ₹{product.originalPrice.toLocaleString()}
+              </span>
+            )}
+          </div>
+
+          {/* Stock signal */}
+          {isAvailable && product.stock <= 5 && (
+            <p className="text-[11px] font-medium text-[#A66A00] -mt-2">
+              Only {product.stock} left in stock
             </p>
           )}
+          {!isAvailable && (
+            <p className="text-[11px] text-[#C2413A] flex items-center gap-1 -mt-2">
+              <AlertCircle className="w-3 h-3" /> Sold out
+            </p>
+          )}
+
+          {/* CTA */}
+          <button
+            onClick={handleAddToCart}
+            disabled={!isAvailable || isAdded}
+            aria-label={isAdded ? 'Added to bag' : `Add ${product.title} to bag`}
+            className={`w-full py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-140 shrink-0 ${
+              !isAvailable
+                ? 'bg-[#E3E1DD] text-[#6B7280] cursor-not-allowed'
+                : isAdded
+                ? 'bg-[#2F7D5A] text-white'
+                : 'bg-[#171717] hover:bg-[#E67661] text-white active:scale-[0.98] cursor-pointer'
+            }`}
+          >
+            {!isAvailable ? (
+              'Unavailable'
+            ) : isAdded ? (
+              <><Check className="w-4 h-4" /> Added to Bag</>
+            ) : (
+              <><ShoppingBag className="w-4 h-4" /> Add to Bag</>
+            )}
+          </button>
         </div>
       </div>
-
-      {/* Add to Cart CTA */}
-      <div className="mt-4 pt-2 border-t border-gray-100">
-        <button
-          onClick={handleAddToCart}
-          disabled={!isAvailable || isAdded}
-          className={`w-full py-2 px-3 rounded-full text-xs font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-sm ${
-            !isAvailable
-              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-              : isAdded
-              ? 'bg-emerald-600 text-white shadow-inner cursor-default'
-              : 'bg-[#ffd814] hover:bg-[#f7ca00] text-[#0f1111] active:scale-[0.98] cursor-pointer'
-          }`}
-        >
-          {!isAvailable ? (
-            <span>Out of Stock</span>
-          ) : isAdded ? (
-            <>
-              <Check className="w-4 h-4" />
-              <span>Added to Cart</span>
-            </>
-          ) : (
-            <>
-              <ShoppingCart className="w-4 h-4" />
-              <span>Add to Cart</span>
-            </>
-          )}
-        </button>
-      </div>
-    </div>
+    </article>
   );
 }

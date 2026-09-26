@@ -91,7 +91,7 @@ export function ReviewSection({ productId, productTitle }: ReviewSectionProps) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Column (4 cols): Rating Summary & Write Review trigger */}
-        <div className="lg:col-span-4 space-y-6">
+        <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
           <RatingSummary
             summary={summary}
             selectedStar={selectedStar}

@@ -99,12 +99,12 @@ export function OrderReview({
               </h4>
               <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
                 <span>Qty: <strong className="text-gray-800">{item.quantity}</strong></span>
-                <span>Unit: <strong className="text-gray-800">${item.unitPrice.toFixed(2)}</strong></span>
+                <span>Unit: <strong className="text-gray-800">₹{item.unitPrice.toFixed(2)}</strong></span>
               </div>
             </div>
             <div className="text-right shrink-0">
               <span className="text-sm font-bold text-gray-900">
-                ${item.lineTotal.toFixed(2)}
+                ₹{item.lineTotal.toFixed(2)}
               </span>
             </div>
           </div>

@@ -2,103 +2,101 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { DEPARTMENTS } from '@/data/departments';
-import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
-import { Layers, ArrowRight, Sparkles, ChevronRight } from 'lucide-react';
+import { Crosshair } from 'lucide-react';
 
 export const metadata = {
-  title: 'All Shopping Departments - Project Apex',
-  description: 'Explore the complete directory of shopping departments in Project Apex: Clothing, Electronics, Home, Beauty, Books, and Sports.',
+  title: 'All Departments - PEHNO',
+  description: 'Explore our edgy, curated collections.',
 };
 
 export default function DepartmentsDirectoryPage() {
   return (
-    <div className="bg-gray-50 min-h-screen py-8">
+    <div className="bg-[#F9F6F1] min-h-screen pb-20 pt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Breadcrumbs items={[{ label: 'All Departments' }]} />
-
-        {/* Directory Header Banner */}
-        <div className="relative rounded-2xl overflow-hidden bg-slate-900 text-white p-8 md:p-12 mb-10 shadow-md">
-          <div className="relative z-10 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full text-xs font-bold mb-4 border border-amber-400/30">
-              <Layers className="w-3.5 h-3.5" /> Department Directory
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight mb-3">
-              Explore Every Department in Project Apex
-            </h1>
-            <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-6">
-              Browse curated fashion, high-performance electronics, living essentials, dermatologist skincare, and bestselling titles with instant Prime delivery.
-            </p>
-            <Link
-              href="/todays-deals"
-              className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold px-5 py-2.5 rounded-lg text-sm transition shadow-sm"
-            >
-              <Sparkles className="w-4 h-4 text-slate-900" />
-              <span>Shop Today's Deals</span>
-            </Link>
-          </div>
-          <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-20 hidden md:block">
-            <div className="w-full h-full bg-gradient-to-l from-amber-500/30 to-transparent" />
-          </div>
+        
+        {/* Simple Page Header */}
+        <div className="mb-12">
+           <h1 className="text-4xl md:text-5xl font-black text-[#171717] tracking-tighter uppercase">
+             The Directory
+           </h1>
+           <p className="text-[#6B7280] text-sm mt-2 font-mono uppercase tracking-widest">
+             // Select your aesthetic
+           </p>
         </div>
 
-        {/* Departments Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {DEPARTMENTS.map((dept) => (
-            <div
-              key={dept.id}
-              className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col"
-            >
-              {/* Department Image & Title Banner */}
-              <div className="relative h-48 w-full bg-gray-100 overflow-hidden group">
-                <Image
-                  src={dept.heroImage}
-                  alt={dept.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-5 text-white">
-                  <h2 className="text-xl font-bold text-white tracking-tight">{dept.name}</h2>
-                  <p className="text-xs text-amber-300 font-medium line-clamp-1 mt-0.5">
-                    {dept.bannerTagline}
-                  </p>
-                </div>
-              </div>
-
-              {/* Subcategories Links */}
-              <div className="p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <p className="text-xs text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-                    {dept.description}
-                  </p>
-
-                  <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">
-                    Subcategories
-                  </h3>
-                  <div className="space-y-1.5 mb-6">
-                    {dept.subcategories.map((sub) => (
-                      <Link
-                        key={sub.id}
-                        href={`/${dept.slug}/${sub.slug}`}
-                        className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-gray-50 text-xs text-gray-700 hover:text-amber-700 font-medium transition"
-                      >
-                        <span>{sub.name}</span>
-                        <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-                      </Link>
-                    ))}
-                  </div>
+        {/* ── EDGY Y2K GRID ──────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+          {DEPARTMENTS.map((dept) => {
+            const fallbackImage = "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=600&q=80";
+            
+            return (
+              <Link 
+                key={dept.id}
+                href={`/${dept.slug}`} 
+                className="block relative w-full aspect-[4/5] bg-[#29A0EA] rounded-2xl p-4 sm:p-6 overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group"
+              >
+                {/* 1. Grid Background */}
+                <div className="absolute inset-0" style={{ 
+                  backgroundImage: 'linear-gradient(rgba(255,255,255,0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.25) 1px, transparent 1px)', 
+                  backgroundSize: '12% 12%' 
+                }} />
+                
+                {/* 2. Crop Marks (White lines and nodes) */}
+                <div className="absolute inset-5 sm:inset-8 border border-white/40 pointer-events-none z-0">
+                   {/* Corners */}
+                   <div className="absolute -top-1 -left-1 w-2 h-2 bg-white" />
+                   <div className="absolute -top-1 -right-1 w-2 h-2 bg-white" />
+                   <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-white" />
+                   <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-white" />
+                   {/* Midpoints */}
+                   <div className="absolute top-1/2 -left-1 w-2 h-2 bg-white -translate-y-1/2" />
+                   <div className="absolute top-1/2 -right-1 w-2 h-2 bg-white -translate-y-1/2" />
                 </div>
 
-                <Link
-                  href={`/${dept.slug}`}
-                  className="w-full py-2.5 bg-gray-50 hover:bg-amber-50 text-slate-900 hover:text-amber-800 border border-gray-200 hover:border-amber-300 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5"
-                >
-                  <span>Explore All {dept.shortName}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-          ))}
+                {/* 3. Main Content Container */}
+                <div className="relative w-full h-full flex flex-col px-3 py-6 sm:px-6 sm:py-10 z-10">
+                   
+                   {/* Image Container with black borders */}
+                   <div className="relative flex-1 w-full flex flex-col shadow-2xl transition-transform duration-500 group-hover:-translate-y-2">
+                      
+                      {/* Top Black Bar */}
+                      <div className="bg-[#09090b] text-white px-3 py-2 flex justify-between items-center z-20">
+                         <span className="font-mono text-[9px] sm:text-[10px] font-bold tracking-[0.2em] uppercase truncate pr-4">
+                           {dept.bannerTagline || "MATCHING ENERGY. ALWAYS"}
+                         </span>
+                         <Crosshair className="w-4 h-4 text-white/80 shrink-0" />
+                      </div>
+
+                      {/* Main Image */}
+                      <div className="relative flex-1 w-full bg-zinc-800 overflow-hidden">
+                         <Image 
+                           unoptimized={true}
+                           src={dept.heroImage || fallbackImage} 
+                           alt={dept.name} 
+                           fill 
+                           className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out" 
+                         />
+                      </div>
+                   </div>
+
+
+
+                   {/* 5. Bottom Title Label */}
+                   <div className="absolute -bottom-3 -left-3 sm:-bottom-4 sm:-left-4 max-w-[calc(100%+12px)] bg-white border-[3px] border-[#09090b] p-1 sm:p-2 z-30 shadow-[4px_4px_0_0_#09090b] group-hover:shadow-[6px_6px_0_0_#09090b] transition-shadow duration-300">
+                      <div className="bg-[#09090b] text-white text-[8px] sm:text-[10px] font-mono px-2 py-0.5 flex justify-between items-center mb-1">
+                         <span>pehno.com</span>
+                         <span className="text-[8px]">x</span>
+                      </div>
+                      <h2 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-tighter leading-none text-[#09090b] px-1 sm:px-2 py-1 font-sans break-words text-wrap">
+                         {dept.shortName.replace(/&/g, ' & ').replace(/([a-z])([A-Z])/g, '$1 $2')}
+                      </h2>
+                   </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
+
       </div>
     </div>
   );

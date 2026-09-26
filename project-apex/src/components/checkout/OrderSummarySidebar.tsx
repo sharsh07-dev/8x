@@ -59,33 +59,33 @@ export function OrderSummarySidebar({
         <div className="space-y-2 text-xs text-gray-600">
           <div className="flex justify-between">
             <span>Items ({itemCount}):</span>
-            <span className="text-gray-900 font-medium">${pricing.subtotal.toFixed(2)}</span>
+            <span className="text-gray-900 font-medium">₹{pricing.subtotal.toFixed(2)}</span>
           </div>
 
           <div className="flex justify-between">
             <span>Shipping &amp; handling:</span>
             <span className={pricing.shipping === 0 ? 'text-emerald-700 font-bold' : 'text-gray-900 font-medium'}>
-              {pricing.shipping === 0 ? 'FREE' : `$${pricing.shipping.toFixed(2)}`}
+              {pricing.shipping === 0 ? 'FREE' : `₹${pricing.shipping.toFixed(2)}`}
             </span>
           </div>
 
           {pricing.discount > 0 && (
             <div className="flex justify-between text-emerald-700 font-medium">
               <span>Savings applied:</span>
-              <span>-${pricing.discount.toFixed(2)}</span>
+              <span>-₹{pricing.discount.toFixed(2)}</span>
             </div>
           )}
 
           <div className="flex justify-between">
             <span>Estimated tax to be collected:</span>
-            <span className="text-gray-900 font-medium">${pricing.tax.toFixed(2)}</span>
+            <span className="text-gray-900 font-medium">₹{pricing.tax.toFixed(2)}</span>
           </div>
         </div>
 
         <div className="mt-4 pt-3 border-t border-gray-200 flex justify-between items-baseline">
           <span className="text-base font-bold text-gray-900">Order total:</span>
           <span className="text-xl font-extrabold text-amber-700">
-            ${pricing.total.toFixed(2)}
+            ₹{pricing.total.toFixed(2)}
           </span>
         </div>
       </div>

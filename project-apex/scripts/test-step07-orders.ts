@@ -30,7 +30,7 @@ async function runTests() {
       { productId: 'prod-1', quantity: 2 }, // $189.99 * 2 = $379.98
       { productId: 'prod-2', quantity: 1 }, // $328.00 * 1 = $328.00
     ];
-    const pricing = calculateOrderPricing(sampleItems, 'FREE_STANDARD', 'APEX10');
+    const pricing = await calculateOrderPricing(sampleItems, 'FREE_STANDARD', 'APEX10');
     assert(pricing.success, 'Pricing calculated successfully');
     if (pricing.success) {
       assert(pricing.pricing.subtotal === 707.98, `Subtotal exact match ($707.98 expected, got ${pricing.pricing.subtotal})`);

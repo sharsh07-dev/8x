@@ -86,35 +86,36 @@ function LoginFormContent() {
   // While redirecting, show a spinner
   if (signedIn) {
     return (
-      <div className="w-full max-w-md bg-white p-8 rounded-lg border border-gray-300 shadow-sm text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f08804] mx-auto mb-3" />
-        <p className="text-sm text-gray-600">Signing you in...</p>
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl border border-[#E3E1DD] shadow-sm text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#171717] border-t-transparent mx-auto mb-3" />
+        <p className="text-sm text-[#6B7280]">Signing you in…</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-md bg-white p-7 sm:p-8 rounded-lg border border-gray-300 shadow-sm">
-      <h1 className="text-2xl font-bold text-gray-900 mb-5">
-        Sign in
+    <div className="w-full max-w-md bg-white p-8 sm:p-10 rounded-2xl border border-[#E3E1DD] shadow-[0_4px_32px_-8px_rgba(23,23,23,0.10)]">
+      <h1 className="text-2xl font-bold text-[#171717] mb-1">
+        Sign in to PEHNO
       </h1>
+      <p className="text-sm text-[#6B7280] mb-6">Good to have you back.</p>
 
       {isJustVerified && (
-        <div className="mb-5 p-3.5 rounded-md bg-emerald-50 border border-emerald-200 flex items-start gap-2.5 text-xs text-emerald-800">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-          <span>Your email was successfully verified! Please sign in below.</span>
+        <div className="mb-5 p-4 rounded-xl bg-[rgba(47,125,90,0.08)] border border-[rgba(47,125,90,0.20)] flex items-start gap-3 text-sm text-[#2F7D5A]">
+          <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>Your email was verified! Please sign in below.</span>
         </div>
       )}
 
       {error && (
-        <div className="mb-5 p-3.5 rounded-md bg-red-50 border border-red-200 flex items-start gap-2.5 text-xs text-red-800">
-          <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+        <div className="mb-5 p-4 rounded-xl bg-[rgba(194,65,58,0.06)] border border-[rgba(194,65,58,0.20)] flex items-start gap-3 text-sm text-[#C2413A]">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <p className="leading-relaxed">{error}</p>
             {error.includes('verify your email') && (
-              <Link 
+              <Link
                 href={`/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}`}
-                className="font-bold text-[#007185] hover:underline block pt-1"
+                className="font-semibold text-[#E67661] hover:underline block pt-1"
               >
                 Go to verification page →
               </Link>
@@ -126,8 +127,8 @@ function LoginFormContent() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-xs font-bold text-gray-900 mb-1">
-            Email or mobile phone number
+          <label htmlFor="email" className="block text-sm font-medium text-[#171717] mb-1.5">
+            Email address
           </label>
           <input
             id="email"
@@ -137,19 +138,19 @@ function LoginFormContent() {
             placeholder="name@example.com"
             autoComplete="email"
             required
-            className="w-full px-3 py-2 text-xs border border-gray-400 rounded focus:border-[#e77600] focus:ring-1 focus:ring-[#e77600] outline-none transition-colors"
+            className="pehno-input"
           />
         </div>
 
         {/* Password */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label htmlFor="password" className="text-xs font-bold text-gray-900">
+            <label htmlFor="password" className="text-sm font-medium text-[#171717]">
               Password
             </label>
             <Link
               href="/forgot-password"
-              className="text-xs text-[#007185] hover:underline hover:text-[#c7511f]"
+              className="text-xs font-medium text-[#E67661] hover:underline"
             >
               Forgot password?
             </Link>
@@ -160,10 +161,10 @@ function LoginFormContent() {
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
+              placeholder="Enter your password"
               autoComplete="current-password"
               required
-              className="w-full px-3 py-2 pr-10 text-xs border border-gray-400 rounded focus:border-[#e77600] focus:ring-1 focus:ring-[#e77600] outline-none transition-colors"
+              className="pehno-input pr-12"
             />
             <button
               type="button"
@@ -183,10 +184,10 @@ function LoginFormContent() {
             type="checkbox"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
-            className="rounded text-[#f08804] focus:ring-[#f08804] w-3.5 h-3.5 cursor-pointer"
+            className="rounded w-4 h-4 border-[#E3E1DD] text-[#171717] cursor-pointer"
           />
-          <label htmlFor="rememberMe" className="text-xs text-gray-700 cursor-pointer select-none">
-            Keep me signed in on this device
+          <label htmlFor="rememberMe" className="text-sm text-[#6B7280] cursor-pointer select-none">
+            Keep me signed in
           </label>
         </div>
 
@@ -195,14 +196,15 @@ function LoginFormContent() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2.5 px-4 bg-[#ffd814] hover:bg-[#f7ca00] text-[#0f1111] font-semibold text-xs rounded-full shadow-sm transition-all border border-[#fcd34d] flex items-center justify-center gap-2 ${
-              loading ? 'opacity-70 cursor-wait' : 'cursor-pointer active:scale-[0.99]'
+            className={`btn-primary w-full justify-center mt-2 ${
+              loading ? 'opacity-70 cursor-wait' : ''
             }`}
+            style={{ borderRadius: '12px', minHeight: '52px', fontSize: '15px' }}
           >
             {loading ? (
               <>
-                <div className="w-3.5 h-3.5 border-2 border-[#131921] border-t-transparent rounded-full animate-spin" />
-                <span>Signing in...</span>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Signing in…</span>
               </>
             ) : (
               <span>Sign In</span>
@@ -212,25 +214,20 @@ function LoginFormContent() {
       </form>
 
       {/* Conditions */}
-      <p className="text-[11px] text-gray-600 mt-5 leading-relaxed">
-        By continuing, you agree to Project Apex's{' '}
-        <Link href="/legal/conditions-of-use" className="text-[#007185] hover:underline">Conditions of Use</Link> and{' '}
-        <Link href="/legal/privacy-notice" className="text-[#007185] hover:underline">Privacy Notice</Link>.
+      <p className="text-xs text-[#6B7280] mt-6 leading-relaxed">
+        By signing in, you agree to PEHNO's{' '}
+        <Link href="/legal/conditions-of-use" className="text-[#E67661] hover:underline">Conditions of Use</Link> and{' '}
+        <Link href="/legal/privacy-notice" className="text-[#E67661] hover:underline">Privacy Notice</Link>.
       </p>
 
       {/* New to Apex Divider */}
-      <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-        <div className="relative flex justify-center text-xs mb-4">
-          <span className="bg-white px-3 text-gray-500 font-medium relative -top-3">
-            New to Project Apex?
-          </span>
-        </div>
-        <Link
-          href="/register"
-          className="inline-flex items-center justify-center w-full py-2 px-4 bg-white hover:bg-gray-50 text-gray-800 font-semibold text-xs rounded-full border border-gray-300 shadow-2xs transition-colors"
-        >
-          Create your Project Apex account
-        </Link>
+      <div className="mt-6 pt-6 border-t border-[#E3E1DD] text-center">
+        <p className="text-sm text-[#6B7280]">
+          New to PEHNO?{' '}
+          <Link href="/register" className="font-semibold text-[#E67661] hover:underline">
+            Create an account
+          </Link>
+        </p>
       </div>
     </div>
   );
@@ -238,16 +235,21 @@ function LoginFormContent() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-[85vh] bg-[#eaeded] py-10 px-4 flex flex-col items-center justify-center font-sans">
-      <div className="mb-6 text-center">
-        <Link href="/" className="text-3xl font-black tracking-tight text-[#131921]">
-          apex<span className="text-[#f08804]">.</span>
+    <div className="min-h-[calc(100vh-8rem)] bg-[#F9F6F1] py-12 px-4 flex flex-col items-center justify-center">
+      <div className="mb-8 text-center">
+        <Link
+          href="/"
+          className="text-3xl font-bold text-[#171717] hover:text-[#E67661] transition-colors"
+         
+        >
+          PEHNO
         </Link>
+        <p className="text-xs text-[#6B7280] mt-1 uppercase tracking-widest">Discover · Try · Decide · Buy</p>
       </div>
 
       <Suspense fallback={
-        <div className="w-full max-w-md bg-white p-8 rounded-lg border border-gray-300 shadow-sm text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f08804] mx-auto" />
+        <div className="w-full max-w-md bg-white p-8 rounded-2xl border border-[#E3E1DD] text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-[#171717] border-t-transparent mx-auto" />
         </div>
       }>
         <LoginFormContent />

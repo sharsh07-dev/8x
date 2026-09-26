@@ -1,4 +1,4 @@
-import { mockProducts } from '@/data/mockProducts';
+import { getProductById } from '../catalog.service';
 
 export interface DeliveryOption {
   id: string;
@@ -59,11 +59,11 @@ export interface PricingCalculationResult {
  * Calculates authoritative pricing on the server based on product database/catalog.
  * All financial values are rounded to 2 decimal places to avoid floating point anomalies.
  */
-export function calculateOrderPricing(
+export async function calculateOrderPricing(
   items: { productId: string; quantity: number }[],
   deliveryOptionId: string = 'FREE_STANDARD',
   promoCode?: string
-): { success: true; pricing: PricingCalculationResult } | { success: false; error: string } {
+): Promise<{ success: true; pricing: PricingCalculationResult } | { success: false; error: string }> {
   if (!items || items.length === 0) {
     return { success: false, error: 'No items provided for pricing calculation' };
   }
@@ -78,7 +78,7 @@ export function calculateOrderPricing(
       return { success: false, error: `Invalid quantity ${item.quantity} for product ${item.productId}` };
     }
 
-    const product = mockProducts.find((p) => p.id === item.productId);
+    const product = await getProductById(item.productId);
     if (!product) {
       return { success: false, error: `Product with ID "${item.productId}" was not found in catalog` };
     }

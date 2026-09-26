@@ -1,25 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* ─── PEHNO Design Tokens ─────────────────────────────────── */
 :root {
-  --apex-header: #131921;
-  --apex-header-light: #232f3e;
-  --apex-header-sub: #1a2433;
-  --apex-accent: #f08804;
-  --apex-accent-hover: #e47911;
-  --apex-yellow: #febd69;
-  --apex-yellow-light: #fef0c7;
-  --apex-blue: #007185;
-  --apex-blue-hover: #004b57;
-  --apex-bg: #e3e6e6;
-  --apex-card-bg: #ffffff;
-  --apex-text-main: #0f1111;
-  --apex-text-muted: #565959;
-  --apex-border: #d5d9d9;
+  /* Brand Colors */
+  --p-ink:       #171717;
+  --p-ivory:     #F9F6F1;
+  --p-peach:     #F6B7A3;
+  --p-coral:     #E67661;
+  --p-ai:        #6B4CE6;
+
+  /* Semantic */
+  --p-success:   #2F7D5A;
+  --p-warning:   #A66A00;
+  --p-error:     #C2413A;
+  --p-info:      #2F6FED;
+  --p-rating:    #C48A11;
+  --p-muted:     #6B7280;
+  --p-border:    #E3E1DD;
+
+  /* Surfaces */
+  --p-surface:   #FFFFFF;
+  --p-bg:        #F9F6F1;
+  --p-card:      #FFFFFF;
+
+  /* Typography */
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Radii */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+
+  /* Shadows */
+  --shadow-1: 0 1px 3px 0 rgb(23 23 23 / 0.06), 0 1px 2px -1px rgb(23 23 23 / 0.06);
+  --shadow-2: 0 4px 16px -2px rgb(23 23 23 / 0.10), 0 2px 6px -2px rgb(23 23 23 / 0.06);
+  --shadow-3: 0 20px 48px -8px rgb(23 23 23 / 0.18), 0 8px 24px -4px rgb(23 23 23 / 0.10);
+
+  /* Motion */
+  --motion-fast:     140ms;
+  --motion-standard: 220ms;
+  --motion-emphasis: 320ms;
+}
+
+/* ─── Base Reset ──────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background-color: var(--apex-bg);
-  color: var(--apex-text-main);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: var(--p-bg);
+  color: var(--p-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Typography Utilities ───────────────────────────────── */
+.font-display { font-family: var(--font-display); }
+.font-sans    { font-family: var(--font-sans); }
+
+/* ─── Scrollbar Utilities ─────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── Focus Visible ──────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--p-ink);
+  outline-offset: 2px;
+}
+
+/* ─── PEHNO Button Primitives ─────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--p-ink);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--motion-fast) ease-out,
+              transform var(--motion-fast) ease-out;
+  min-height: 48px;
+  text-decoration: none;
+}
+.btn-primary:hover  { background-color: #2A2A2A; }
+.btn-primary:active { background-color: #000; transform: scale(0.98); }
+.btn-primary:disabled { background-color: #D1D5DB; color: #fff; cursor: not-allowed; }
+
+.btn-tryon {
+  background-color: var(--p-peach);
+  color: var(--p-ink);
+}
+.btn-tryon:hover { background-color: #F1A18C; }
+
+.btn-ai {
+  background-color: var(--p-ai);
+  color: #fff;
+}
+.btn-ai:hover { background-color: #5B3ED0; }
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--p-ink);
+  border: 1.5px solid var(--p-ink);
+}
+.btn-secondary:hover { background-color: #F7F7F6; }
+
+.btn-ghost {
+  background-color: transparent;
+  color: var(--p-ink);
+  border: none;
+}
+.btn-ghost:hover { background-color: #F7F7F6; }
+
+/* ─── PEHNO Card ──────────────────────────────────────────── */
+.pehno-card {
+  background: var(--p-card);
+  border: 1px solid var(--p-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  transition: box-shadow var(--motion-standard) ease-out;
+}
+.pehno-card:hover { box-shadow: var(--shadow-2); }
+
+/* ─── PEHNO Input ─────────────────────────────────────────── */
+.pehno-input {
+  height: 48px;
+  width: 100%;
+  padding: 0 16px;
+  background: #fff;
+  border: 1.5px solid var(--p-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--p-ink);
+  transition: border-color var(--motion-fast) ease-out;
+  outline: none;
+}
+.pehno-input:focus { border-color: var(--p-ink); }
+.pehno-input.error { border-color: var(--p-error); }
+
+/* ─── AI Reason Chip ──────────────────────────────────────── */
+.chip-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgb(107 76 230 / 0.08);
+  color: var(--p-ai);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ─── Trust Badge ─────────────────────────────────────────── */
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgb(47 125 90 / 0.08);
+  color: var(--p-success);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ─── Skeleton Loading ────────────────────────────────────── */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+.skeleton {
+  background: var(--p-border);
+  border-radius: var(--radius-sm);
+  animation: skeleton-pulse 1.8s ease-in-out infinite;
+}
+
+/* ─── Reduced Motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
