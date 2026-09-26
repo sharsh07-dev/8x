@@ -574,14 +574,14 @@ export default function HomeClient({ products }: { products: any[] }) {
                 </div>
                 <div className="grid grid-cols-3 gap-x-4 gap-y-6 pt-2">
                   {[
-                    { img: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=300&q=80", label: "Streetwear" },
-                    { img: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=300&q=80", label: "Workwear" },
-                    { img: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=300&q=80", label: "Evening" },
-                    { img: "https://assets.myntassets.com/f_webp,dpr_1.0,q_60,w_210,c_limit,fl_progressive/assets/images/22895374/2023/4/26/786a2c40-aa45-4a49-adf1-0eb031f482631682533534063Sarees1.jpg", label: "Ethnic" },
-                    { img: "https://images.unsplash.com/photo-1509319117193-57bab727e09d?w=300&q=80", label: "Accessories" },
-                    { img: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&q=80", label: "Beauty" }
+                    { img: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=300&q=80", label: "Streetwear", link: "/search?q=t-shirt" },
+                    { img: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=300&q=80", label: "Workwear", link: "/search?q=shirt" },
+                    { img: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=300&q=80", label: "Evening", link: "/search?q=dress" },
+                    { img: "https://assets.myntassets.com/f_webp,dpr_1.0,q_60,w_210,c_limit,fl_progressive/assets/images/22895374/2023/4/26/786a2c40-aa45-4a49-adf1-0eb031f482631682533534063Sarees1.jpg", label: "Ethnic", link: "/search?q=saree" },
+                    { img: "https://images.unsplash.com/photo-1509319117193-57bab727e09d?w=300&q=80", label: "Accessories", link: "/search?q=watch" },
+                    { img: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&q=80", label: "Beauty", link: "/search?q=beauty" }
                   ].map((item, idx) => (
-                    <Link key={idx} href={`/search?q=${item.label.toLowerCase()}`} className="group flex flex-col items-center">
+                    <Link key={idx} href={item.link || `/search?q=${item.label.toLowerCase()}`} className="group flex flex-col items-center">
                       <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-[104px] lg:h-[104px] rounded-full overflow-hidden bg-white shadow-sm mb-3 border-4 border-transparent group-hover:border-[#E67661]/40 transition-all duration-300 relative shrink-0">
                         <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                         <div className="absolute inset-0 bg-[#E67661]/0 group-hover:bg-[#E67661]/10 transition-colors z-10 pointer-events-none"></div>

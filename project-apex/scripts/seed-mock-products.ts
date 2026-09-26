@@ -103,14 +103,35 @@ async function main() {
   });
   console.log('✓ Reset existing product AI metadata');
 
-  // Get categories and subcategories from DB — keyed by SLUG for reliable matching
-  const allCategories = await prisma.category.findMany();
-  const allSubcats = await prisma.subcategory.findMany();
-  const catMap = new Map(allCategories.map(c => [c.slug, c.id])); // slug matches department value
-  const subcatMap = new Map(allSubcats.map(s => [s.slug, s.id]));
+  // Get categories and subcategories from DB — keyed by SLUG
+  let allCategories = await prisma.category.findMany();
+  let allSubcats = await prisma.subcategory.findMany();
+  let catMap = new Map(allCategories.map(c => [c.slug, c.id]));
+  let subcatMap = new Map(allSubcats.map(s => [s.slug, s.id]));
 
   let updated = 0;
   let fashionCount = 0;
+
+  // First pass: ensure categories exist
+  for (const p of mockProducts) {
+    const deptSlug = (p.department || 'other').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    if (!catMap.has(deptSlug)) {
+      const newCat = await prisma.category.create({
+        data: { name: p.department || 'Other', slug: deptSlug, description: 'Auto-generated' }
+      });
+      catMap.set(deptSlug, newCat.id);
+    }
+    
+    if (p.subcategory) {
+      const subSlug = p.subcategory.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      if (!subcatMap.has(subSlug)) {
+        const newSub = await prisma.subcategory.create({
+          data: { name: p.subcategory, slug: subSlug, categoryId: catMap.get(deptSlug)! }
+        });
+        subcatMap.set(subSlug, newSub.id);
+      }
+    }
+  }
 
   for (const p of mockProducts) {
     const dept = p.department || '';
